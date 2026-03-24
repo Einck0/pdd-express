@@ -1,6 +1,25 @@
 # pdd-express
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Flask](https://img.shields.io/badge/Flask-3.x-black)
+![Version](https://img.shields.io/badge/version-1.0-brightgreen)
+![SQLite](https://img.shields.io/badge/database-SQLite-07405E)
+![OpenClaw](https://img.shields.io/badge/Acknowledgement-OpenClaw-6f42c1)
+
 A lightweight Flask-based service for managing user phone bindings and querying package information for PDD express workflows.
+
+## 中文介绍
+
+`pdd-express` 是一个基于 Flask 的轻量级后端服务，主要用于：
+
+- 管理用户与手机号绑定关系
+- 查询包裹信息
+- 提供微信登录相关接口
+- 使用 SQLite 进行本地数据存储
+- 使用 `.env` 管理配置
+- 使用标准库 `logging` 进行日志记录
+
+它适合作为一个可自托管、易维护、便于继续重构和扩展的 Python 小型服务项目。
 
 ## Features
 
@@ -13,6 +32,67 @@ A lightweight Flask-based service for managing user phone bindings and querying 
 - `.env`-based configuration
 - Standard Python `logging` with rotating log files
 - Database initialization and migration scripts
+
+## Quick Start
+
+### 1. Clone the project
+
+```bash
+git clone git@github.com:Einck0/pdd-express.git
+cd pdd-express
+```
+
+### 2. Create environment file
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` as needed.
+
+### 3. Create Python environment and install dependencies
+
+Using `uv`:
+
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+Or using built-in `venv`:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 4. Initialize database
+
+```bash
+python3 init_db.py
+```
+
+### 5. Run locally
+
+```bash
+python3 main.py
+```
+
+The default local port is:
+
+- `5000`
+
+### 6. Docker (optional)
+
+```bash
+docker compose up --build
+```
+
+Docker port mapping:
+
+- host `15000` -> container `5000`
 
 ## Project Structure
 
@@ -44,12 +124,6 @@ pdd-express/
 
 This project uses **`.env`** as the primary configuration source.
 
-Create a `.env` file from the template:
-
-```bash
-cp .env.example .env
-```
-
 Example variables:
 
 ```env
@@ -69,30 +143,6 @@ PDD_MOBILE=
 PDD_ENCRYPTED_PASSWORD=
 PDD_COOKIE_STRING=
 PDD_USER_AGENT=Mozilla/5.0 ...
-```
-
-## Installation
-
-### Option 1: Local Python environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Or using `uv`:
-
-```bash
-uv venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
-```
-
-### Option 2: Docker
-
-```bash
-docker compose up --build
 ```
 
 ## Database Setup
