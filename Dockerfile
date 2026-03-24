@@ -11,6 +11,6 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua
 
 COPY . .
 
-EXPOSE 15000
+EXPOSE 5000
 
-CMD ["sh", "-c", "python init_db.py && python main.py"]
+CMD ["sh", "-c", "python src/init_db.py && python src/main.py"]
