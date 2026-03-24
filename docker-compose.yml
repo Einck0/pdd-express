@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build: .
+    container_name: pdd-express
+    restart: unless-stopped
+    ports:
+      - "15000:5000"
+    env_file:
+      - .env
+    volumes:
+      - /home/service/pdd-express/pdd.db:/app/pdd.db
+      - /home/service/pdd-express/logs:/app/logs
+    command: sh -c "python init_db.py && python main.py"
