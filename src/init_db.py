@@ -24,6 +24,14 @@ def init_db():
             """
         )
         conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS cookies (
+                name TEXT PRIMARY KEY,
+                value TEXT
+            )
+            """
+        )
+        conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_user_phones_wxid ON user_phones(wxid)"
         )
     print("Database schema initialized.")
