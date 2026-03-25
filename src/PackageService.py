@@ -62,6 +62,9 @@ class PackageService:
                 logger.warning("解析 cookie 时遇到问题: %s", line)
         return cookies
 
+    def set_sub_pass_id(self, sub_pass_id: str) -> None:
+        self.cookies["SUB_PASS_ID"] = str(sub_pass_id)
+
     def get_sub_pass_id_from_login(self) -> str | None:
         logger.info("尝试通过模拟登录 API 请求获取 SUB_PASS_ID...")
         login_url = "https://mdkd-api.pinduoduo.com/sixers/api/user/loginByMobile"
@@ -217,6 +220,17 @@ class PackageService:
         if response.status_code != 200:
             logger.error("API request failed with status code: %s", response.status_code)
             return False
+
+        try:
+            response_data = response.json()
+            if response_data.get("error_code", 0) != 0:
+                logger.error("API returned error code: %s", response_data.get("error_code"))
+                return False
+        except ValueError:
+            logger.error("Response is not valid JSON.")
+            return False
+
+        return True
 
         try:
             data = response.json()

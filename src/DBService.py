@@ -1,9 +1,6 @@
 import sqlite3
 
 from database import db
-from logging_config import configure_logging
-
-logger = configure_logging("db_service")
 
 
 class DBService:
@@ -21,12 +18,3 @@ class DBService:
         with db.session() as conn:
             conn.execute(sql, params or ())
         return True
-
-    def get_sub_pass_id(self):
-        row = self.fetch_one(
-            "SELECT value FROM cookies WHERE name = 'SUB_PASS_ID' LIMIT 1"
-        )
-        if row:
-            return row["value"]
-        logger.error("Failed to fetch SUB_PASS_ID from database.")
-        raise Exception("Failed to fetch SUB_PASS_ID from database.")
