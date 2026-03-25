@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+SRC_DIR = Path(__file__).resolve().parent
+BASE_DIR = SRC_DIR.parent
 ENV_FILE = BASE_DIR / ".env"
 
 
@@ -24,6 +25,7 @@ _load_env_file(ENV_FILE)
 @dataclass(frozen=True)
 class Settings:
     base_dir: Path
+    src_dir: Path
     log_dir: Path
     api_prefix: str
     appid: str
@@ -40,15 +42,15 @@ class Settings:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    base_dir = BASE_DIR
-    log_dir = Path(os.getenv("PDD_LOG_DIR", str(base_dir / "logs")))
-    db_dir = Path(os.getenv("PDD_SQLITE_DATABASE_DIR", str(base_dir)))
+    log_dir = Path(os.getenv("PDD_LOG_DIR", str(BASE_DIR / "logs")))
+    db_dir = Path(os.getenv("PDD_SQLITE_DATABASE_DIR", str(BASE_DIR)))
     if not db_dir.is_absolute():
-        db_dir = (base_dir / db_dir).resolve()
+        db_dir = (BASE_DIR / db_dir).resolve()
     db_name = os.getenv("PDD_SQLITE_DATABASE_NAME", "pdd.db")
 
     return Settings(
-        base_dir=base_dir,
+        base_dir=BASE_DIR,
+        src_dir=SRC_DIR,
         log_dir=log_dir,
         api_prefix=os.getenv("PDD_API_PREFIX", "/express"),
         appid=os.getenv("PDD_WECHAT_APPID", ""),
