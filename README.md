@@ -37,7 +37,9 @@ cd pdd-express
 cp .env.example .env
 ```
 
-### 3. Create Python environment and install dependencies
+## Local Development
+
+### 1. Create Python environment and install dependencies
 
 Using `uv`:
 
@@ -55,13 +57,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Initialize database
+### 2. Initialize database
 
 ```bash
 python3 src/init_db.py
 ```
 
-### 5. Run locally
+### 3. Run locally
 
 ```bash
 python3 src/main.py
@@ -70,7 +72,9 @@ python3 src/main.py
 Default local port:
 - `5000`
 
-### 6. Docker (optional)
+## Docker Usage
+
+### Start with Docker Compose
 
 ```bash
 docker compose up --build
@@ -91,6 +95,7 @@ pdd-express/
 │   ├── repository.py         # Data access layer
 │   ├── user_service.py       # Business logic for user phone management
 │   ├── PackageService.py     # Package query service
+│   ├── res.js                # JS resource used for anti-content generation
 │   ├── init_db.py            # Initialize database schema
 │   └── migrate_phones.py     # Migrate old phone data into new schema
 ├── requirements.txt
@@ -105,7 +110,7 @@ pdd-express/
 ## Requirements
 
 - Python 3.10+ recommended
-- Node.js available for `pyexecjs` / `res.js` execution
+- Node.js available for `pyexecjs` / `src/res.js` execution
 - SQLite
 
 ## Configuration
@@ -127,6 +132,20 @@ PDD_MOBILE=
 PDD_ENCRYPTED_PASSWORD=
 PDD_COOKIE_STRING=
 PDD_USER_AGENT=Mozilla/5.0 ...
+```
+
+## Database Setup
+
+Initialize the database schema:
+
+```bash
+python3 src/init_db.py
+```
+
+If you have old backup data that needs migration:
+
+```bash
+python3 src/migrate_phones.py
 ```
 
 ## API Overview
