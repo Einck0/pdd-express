@@ -30,7 +30,13 @@ class Settings:
     api_prefix: str
     appid: str
     secret: str
+    db_backend: str
     sqlite_db_path: Path
+    mysql_host: str
+    mysql_port: int
+    mysql_user: str
+    mysql_password: str
+    mysql_database: str
     pdd_mobile: str
     pdd_encrypted_password: str
     pdd_cookie_string: str
@@ -38,6 +44,7 @@ class Settings:
     host: str
     port: int
     debug: bool
+    app_version: str
 
 
 @lru_cache(maxsize=1)
@@ -48,6 +55,19 @@ def get_settings() -> Settings:
         db_dir = (BASE_DIR / db_dir).resolve()
     db_name = os.getenv("PDD_SQLITE_DATABASE_NAME", "pdd.db")
 
+    mysql_host = os.getenv("PDD_MYSQL_HOST", "")
+    mysql_port = int(os.getenv("PDD_MYSQL_PORT", "3306"))
+    mysql_user = os.getenv("PDD_MYSQL_USER", "")
+    mysql_password = os.getenv("PDD_MYSQL_PASSWORD", "")
+    mysql_database = os.getenv("PDD_MYSQL_DATABASE", "")
+
+    configured_backend = os.getenv("PDD_DB_BACKEND", "auto").strip().lower()
+    mysql_ready = all([mysql_host, mysql_user, mysql_database])
+    if configured_backend == "auto":
+        db_backend = "mysql" if mysql_ready else "sqlite"
+    else:
+        db_backend = configured_backend
+
     return Settings(
         base_dir=BASE_DIR,
         src_dir=SRC_DIR,
@@ -55,7 +75,13 @@ def get_settings() -> Settings:
         api_prefix=os.getenv("PDD_API_PREFIX", "/express"),
         appid=os.getenv("PDD_WECHAT_APPID", ""),
         secret=os.getenv("PDD_WECHAT_SECRET", ""),
+        db_backend=db_backend,
         sqlite_db_path=db_dir / db_name,
+        mysql_host=mysql_host,
+        mysql_port=mysql_port,
+        mysql_user=mysql_user,
+        mysql_password=mysql_password,
+        mysql_database=mysql_database,
         pdd_mobile=os.getenv("PDD_MOBILE", ""),
         pdd_encrypted_password=os.getenv("PDD_ENCRYPTED_PASSWORD", ""),
         pdd_cookie_string=os.getenv("PDD_COOKIE_STRING", ""),
@@ -67,4 +93,5 @@ def get_settings() -> Settings:
         host=os.getenv("PDD_APP_HOST", "0.0.0.0"),
         port=int(os.getenv("PDD_APP_PORT", "15000")),
         debug=os.getenv("PDD_APP_DEBUG", "false").lower() == "true",
+        app_version=os.getenv("PDD_APP_VERSION", "1.1"),
     )
