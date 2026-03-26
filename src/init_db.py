@@ -28,6 +28,29 @@ def init_db():
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
                 """
             )
+        elif settings.db_backend == "postgresql":
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS users (
+                    wxid VARCHAR(255) PRIMARY KEY,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS user_phones (
+                    id BIGSERIAL PRIMARY KEY,
+                    wxid VARCHAR(255) NOT NULL REFERENCES users(wxid),
+                    phone VARCHAR(32) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (wxid, phone)
+                )
+                """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_user_phones_wxid ON user_phones(wxid)"
+            )
         else:
             conn.execute(
                 """

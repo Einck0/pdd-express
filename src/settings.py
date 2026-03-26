@@ -37,6 +37,11 @@ class Settings:
     mysql_user: str
     mysql_password: str
     mysql_database: str
+    postgres_host: str
+    postgres_port: int
+    postgres_user: str
+    postgres_password: str
+    postgres_database: str
     pdd_mobile: str
     pdd_encrypted_password: str
     pdd_cookie_string: str
@@ -61,10 +66,22 @@ def get_settings() -> Settings:
     mysql_password = os.getenv("PDD_MYSQL_PASSWORD", "")
     mysql_database = os.getenv("PDD_MYSQL_DATABASE", "")
 
+    postgres_host = os.getenv("PDD_POSTGRES_HOST", "")
+    postgres_port = int(os.getenv("PDD_POSTGRES_PORT", "5432"))
+    postgres_user = os.getenv("PDD_POSTGRES_USER", "")
+    postgres_password = os.getenv("PDD_POSTGRES_PASSWORD", "")
+    postgres_database = os.getenv("PDD_POSTGRES_DATABASE", "")
+
     configured_backend = os.getenv("PDD_DB_BACKEND", "auto").strip().lower()
     mysql_ready = all([mysql_host, mysql_user, mysql_database])
+    postgres_ready = all([postgres_host, postgres_user, postgres_database])
     if configured_backend == "auto":
-        db_backend = "mysql" if mysql_ready else "sqlite"
+        if postgres_ready:
+            db_backend = "postgresql"
+        elif mysql_ready:
+            db_backend = "mysql"
+        else:
+            db_backend = "sqlite"
     else:
         db_backend = configured_backend
 
@@ -82,6 +99,11 @@ def get_settings() -> Settings:
         mysql_user=mysql_user,
         mysql_password=mysql_password,
         mysql_database=mysql_database,
+        postgres_host=postgres_host,
+        postgres_port=postgres_port,
+        postgres_user=postgres_user,
+        postgres_password=postgres_password,
+        postgres_database=postgres_database,
         pdd_mobile=os.getenv("PDD_MOBILE", ""),
         pdd_encrypted_password=os.getenv("PDD_ENCRYPTED_PASSWORD", ""),
         pdd_cookie_string=os.getenv("PDD_COOKIE_STRING", ""),
