@@ -208,17 +208,26 @@ class PackageService:
         self._capture_cookies(resp)
         return resp
 
+    # 只在内存中更新，不持久化到 .env 的 key
+    _MEMORY_ONLY_KEYS = {"JSESSIONID"}
+
     def _capture_cookies(self, resp):
-        """从响应的 Set-Cookie 头合并新 cookie 到内存，并持久化"""
+        """从响应的 Set-Cookie 头合并新 cookie 到内存，非内存专属 key 自动持久化"""
         if not resp.cookies:
             return
         updated = {}
+        mem_only_updated = {}
         for key, value in resp.cookies.items():
             if value != self.cookies.get(key):
-                updated[key] = value
+                if key in self._MEMORY_ONLY_KEYS:
+                    mem_only_updated[key] = value
+                else:
+                    updated[key] = value
             self.cookies[key] = value
+        if mem_only_updated:
+            logger.info("Set-Cookie 仅内存更新: %s", list(mem_only_updated.keys()))
         if updated:
-            logger.info("Set-Cookie 更新: %s", list(updated.keys()))
+            logger.info("Set-Cookie 持久化: %s", list(updated.keys()))
             self.persist_cookies_to_env()
 
     def parse_packages(self, response):
