@@ -12,7 +12,7 @@
     <view class="input-wrap {{searchFocus ? 'input-wrap-focus' : ''}}">
       <input
         class="input"
-        placeholder="运单号后5位 / 全部单号"
+        placeholder="单号后5位 / 全部单号 / 号码"
         value="{{keyword}}"
         bindinput="onInput"
         bindfocus="searchFocus = true"
@@ -33,7 +33,7 @@
     </view>
     <view class="shortcut" bindtap="onGoBindPhone">
       <text class="shortcut-icon">📱</text>
-      <text>手机号</text>
+      <text>号码</text>
     </view>
   </view>
 
@@ -48,8 +48,8 @@
   <!-- 空状态：未绑定 -->
   <view wx:elif="{{!hasPhones}}" class="empty">
     <view class="empty-icon">📱</view>
-    <view class="empty-title">还没有绑定手机号</view>
-    <view class="empty-desc">绑定手机号后自动为你查件</view>
+    <view class="empty-title">还没有绑定号码</view>
+    <view class="empty-desc">绑定号码后自动为你查件</view>
     <view class="btn btn-brand btn-sm" style="width:240rpx;" bindtap="onGoBindPhone">去绑定</view>
   </view>
 

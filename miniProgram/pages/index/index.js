@@ -96,7 +96,7 @@ Page({
     var that = this;
     var kw = this.data.keyword.trim();
     if (kw.length < (app.config.searchMinLength || 4)) {
-      this._toast('请输入至少4位的单号或手机号');
+      this._toast('请输入至少4位单号或号码');
       return;
     }
 

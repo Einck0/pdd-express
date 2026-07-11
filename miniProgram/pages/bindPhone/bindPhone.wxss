@@ -1,4 +1,4 @@
-/* 手机号管理页样式 */
+/* 号码管理页样式 */
 
 .page {
   padding: var(--space-md);
@@ -13,7 +13,7 @@
   margin: var(--space-lg) 0 var(--space-sm);
 }
 
-/* ── 手机号卡片 ── */
+/* ── 号码卡片 ── */
 .phone-card {
   display: flex;
   align-items: center;

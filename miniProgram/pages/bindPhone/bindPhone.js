@@ -1,6 +1,6 @@
 /**
- * 手机号管理页
- * 功能：添加/删除手机号
+ * 号码管理页
+ * 功能：添加/删除号码
  */
 
 var app = getApp();
@@ -55,7 +55,7 @@ Page({
     var phone = this.data.phone.trim();
 
     if (!/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
+      wx.showToast({ title: '请输入正确的号码', icon: 'none' });
       return;
     }
 

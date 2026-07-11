@@ -1,4 +1,4 @@
-<!-- 手机号管理页 -->
+<!-- 号码管理页 -->
 <view class="page">
 
   <!-- 输入区 -->
@@ -24,7 +24,7 @@
     >{{adding ? '添加中…' : '添加'}}</button>
   </view>
 
-  <!-- 手机号列表 -->
+  <!-- 号码列表 -->
   <view class="section-title text-secondary" wx:if="{{!loading && phones.length > 0}}">已绑定号码</view>
 
   <block wx:if="{{loading}}">

@@ -24,7 +24,7 @@
       },
       {
         "pagePath": "pages/bindPhone/bindPhone",
-        "text": "手机号",
+        "text": "号码",
         "iconPath": "assets/tab-phone.png",
         "selectedIconPath": "assets/tab-phone-active.png"
       }
