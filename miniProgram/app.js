@@ -1,60 +1,58 @@
-/**
- * App 入口文件
- * 负责全局登录逻辑和全局数据管理
- */
-var api = require('./utils/api');
 var config = require('./config/config');
+var api = require('./utils/api');
 
 App({
   globalData: {
-    openid: '',           // 用户 openid
-    loginRetries: 0       // 登录重试计数
+    wxid: null,
   },
 
+  config: config,
+  api: api,
+
   onLaunch: function () {
-    this.wxLogin();
+    this.login();
   },
 
   /**
-   * wx.login 自动登录，失败自动重试
+   * 微信登录，获取 openid
+   * 自动重试，成功后存入 globalData 和 storage
    */
-  wxLogin: function () {
+  login: function (attempt) {
     var that = this;
+    attempt = attempt || 0;
+
     wx.login({
       success: function (res) {
-        if (res.code) {
-          api.wxLogin(res.code, function (data) {
-            that.globalData.openid = data.openid || data.open_id || '';
-            that.globalData.loginRetries = 0;
-            // 通知等待登录的页面
-            if (that.loginCallback) {
-              that.loginCallback(that.globalData.openid);
-            }
-          }, function () {
-            that._retryLogin();
-          });
-        } else {
-          that._retryLogin();
+        if (!res.code) {
+          that.retryLogin(attempt, '获取 code 失败');
+          return;
         }
+        api.wxLogin(res.code).then(function (data) {
+          if (data && data.openid) {
+            that.globalData.wxid = data.openid;
+            try { wx.setStorageSync('wxid', data.openid); } catch (e) {}
+          } else {
+            that.retryLogin(attempt, 'openid 为空');
+          }
+        }).catch(function () {
+          that.retryLogin(attempt, '登录请求失败');
+        });
       },
       fail: function () {
-        that._retryLogin();
-      }
+        that.retryLogin(attempt, 'wx.login 调用失败');
+      },
     });
   },
 
-  /**
-   * 登录重试逻辑
-   */
-  _retryLogin: function () {
+  retryLogin: function (attempt, reason) {
     var that = this;
-    that.globalData.loginRetries++;
-    if (that.globalData.loginRetries < config.loginMaxRetries) {
+    console.warn('[login]', reason, 'attempt=' + attempt);
+    if (attempt < that.config.loginRetries) {
       setTimeout(function () {
-        that.wxLogin();
-      }, config.loginRetryDelay);
+        that.login(attempt + 1);
+      }, that.config.loginRetryDelay);
     } else {
-      wx.showToast({ title: '登录失败，请稍后重试', icon: 'none', duration: 2500 });
+      wx.showToast({ title: '登录失败，请稍后重试', icon: 'none' });
     }
-  }
+  },
 });

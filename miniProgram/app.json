@@ -4,10 +4,10 @@
     "pages/bindPhone/bindPhone"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#4F7CFF",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTitleText": "快递取件助手",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#F6F7FB",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F6FA",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
@@ -18,18 +18,18 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "assets/icon-home.png",
-        "selectedIconPath": "assets/icon-home-active.png"
+        "text": "查件",
+        "iconPath": "assets/tab-home.png",
+        "selectedIconPath": "assets/tab-home-active.png"
       },
       {
         "pagePath": "pages/bindPhone/bindPhone",
-        "text": "手机号管理",
-        "iconPath": "assets/icon-phone.png",
-        "selectedIconPath": "assets/icon-phone-active.png"
+        "text": "手机号",
+        "iconPath": "assets/tab-phone.png",
+        "selectedIconPath": "assets/tab-phone-active.png"
       }
     ]
   },
-  "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

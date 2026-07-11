@@ -1,144 +1,117 @@
-/**
- * 首页逻辑
- * 功能：轮播公告、搜索包裹、包裹列表、下拉刷新
- */
-var api = require('../../utils/api');
-var config = require('../../config/config');
+var app = getApp();
 
 Page({
   data: {
-    // 轮播公告
-    bannerTexts: config.bannerTexts,
-    bannerInterval: config.bannerInterval,
-
-    // 搜索
+    banners: [],
+    bannerIdx: 0,
     keyword: '',
-
-    // 包裹列表
     packages: [],
-
-    // 状态控制
+    phones: [],
     loading: true,
-    error: false,
-    errorMsg: '',
-    wxid: ''
+    refreshing: false,
+    hasPhones: false,
   },
 
+  /* ── 生命周期 ── */
+
   onLoad: function () {
-    var that = this;
-    var app = getApp();
-    // 等待登录完成后加载数据
-    if (app.globalData.openid) {
-      that.setData({ wxid: app.globalData.openid });
-      that.loadPackages();
-    } else {
-      app.loginCallback = function (openid) {
-        that.setData({ wxid: openid });
-        that.loadPackages();
-      };
-    }
+    this.setData({ banners: app.config.banners });
+    this.startBannerTimer();
   },
 
   onShow: function () {
-    // 每次显示页面时刷新（从 bindPhone 页返回时数据可能变了）
-    if (this.data.wxid && !this.data.loading) {
-      this.loadPackages();
-    }
+    this.loadData();
   },
 
   onPullDownRefresh: function () {
-    this.loadPackages(function () {
+    this.setData({ refreshing: true });
+    this.loadData().finally(function () {
       wx.stopPullDownRefresh();
     });
   },
 
-  /**
-   * 加载包裹列表
-   */
-  loadPackages: function (cb) {
-    var that = this;
-    if (!that.data.wxid) {
-      that.setData({ loading: false, error: true, errorMsg: '未登录' });
-      if (cb) cb();
-      return;
-    }
-    that.setData({ loading: true, error: false });
+  /* ── 轮播 ── */
 
-    api.getPackages(that.data.wxid, function (data) {
+  startBannerTimer: function () {
+    var that = this;
+    this._bannerTimer = setInterval(function () {
       that.setData({
-        packages: data.packages || [],
-        loading: false,
-        error: false
+        bannerIdx: (that.data.bannerIdx + 1) % that.data.banners.length,
       });
-      if (cb) cb();
-    }, function () {
-      that.setData({
-        loading: false,
-        error: true,
-        errorMsg: '加载失败，下拉刷新重试'
+    }, app.config.bannerInterval);
+  },
+
+  /* ── 数据加载 ── */
+
+  loadData: function () {
+    var that = this;
+    var wxid = app.globalData.wxid;
+
+    if (!wxid) {
+      that.setData({ loading: false });
+      return Promise.resolve();
+    }
+
+    return app.api.getPhones(wxid).then(function (res) {
+      var phones = res.phones || [];
+      that.setData({ phones: phones, hasPhones: phones.length > 0 });
+
+      if (phones.length === 0) {
+        that.setData({ loading: false, packages: [] });
+        return;
+      }
+
+      return app.api.getPackages(wxid).then(function (res2) {
+        that.setData({
+          packages: res2.packages || [],
+          loading: false,
+          refreshing: false,
+        });
       });
-      if (cb) cb();
+    }).catch(function () {
+      that.setData({ loading: false, refreshing: false });
     });
   },
 
-  /**
-   * 搜索输入
-   */
+  /* ── 搜索 ── */
+
   onKeywordInput: function (e) {
     this.setData({ keyword: e.detail.value });
   },
 
-  /**
-   * 搜索包裹
-   */
   onSearch: function () {
     var that = this;
-    var keyword = that.data.keyword.trim();
-    if (!keyword) {
-      wx.showToast({ title: '请输入关键词', icon: 'none' });
+    var wxid = app.globalData.wxid;
+    var keyword = this.data.keyword.trim();
+
+    if (!wxid) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
-    if (!that.data.wxid) {
-      wx.showToast({ title: '未登录', icon: 'none' });
+    if (keyword.length < app.config.searchMinLength) {
+      wx.showToast({ title: '请输入正确的手机号或单号', icon: 'none' });
       return;
     }
 
-    that.setData({ loading: true, error: false });
-
-    api.searchPackages(that.data.wxid, keyword, function (data) {
-      that.setData({
-        packages: data.packages || [],
-        loading: false
-      });
-    }, function () {
-      // 主接口失败，尝试兜底接口
-      api.searchPackagesFallback(that.data.wxid, keyword, function (data) {
-        that.setData({
-          packages: data.packages || [],
-          loading: false
-        });
-      }, function () {
-        that.setData({
-          loading: false,
-          error: true,
-          errorMsg: '搜索失败，请重试'
-        });
-      });
+    wx.showLoading({ title: '查询中...' });
+    app.api.searchPackages(wxid, keyword).then(function (res) {
+      that.setData({ packages: res.packages || [] });
+      if ((res.packages || []).length === 0) {
+        wx.showToast({ title: '未查到包裹', icon: 'none' });
+      }
+    }).finally(function () {
+      wx.hideLoading();
     });
   },
 
-  /**
-   * 刷新按钮
-   */
   onRefresh: function () {
-    this.setData({ keyword: '' });
-    this.loadPackages();
+    this.setData({ loading: true });
+    this.loadData();
   },
 
-  /**
-   * 跳转到手机号管理
-   */
-  goToBindPhone: function () {
+  /* ── 导航 ── */
+
+  onGoToBindPhone: function () {
     wx.switchTab({ url: '/pages/bindPhone/bindPhone' });
-  }
+  },
 });

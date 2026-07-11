@@ -1,138 +1,135 @@
-/**
- * 首页样式
- */
+/* 首页样式 */
+.page { padding: 24rpx; }
 
-.page-container {
-  padding: 16rpx 24rpx;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
-}
-
-/* ========== 轮播公告 ========== */
-.banner-wrap {
-  margin-bottom: 16rpx;
-}
-
-.banner-swiper {
-  height: 64rpx;
-  border-radius: 8rpx;
-  overflow: hidden;
-}
-
-.banner-text {
+/* 公告 */
+.banner {
   display: flex;
   align-items: center;
-  height: 100%;
-  padding: 0 24rpx;
-  font-size: var(--font-caption);
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-radius: 8rpx;
-  white-space: nowrap;
+  gap: 12rpx;
+  padding: 20rpx 24rpx;
+  background: var(--primary-light);
+  border-radius: var(--radius);
+  margin-bottom: 24rpx;
+}
+
+.banner-icon { font-size: 28rpx; }
+
+.banner-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--primary);
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* ========== 搜索栏 ========== */
+/* 搜索 */
 .search-bar {
-  margin-bottom: 16rpx;
-}
-
-.search-input-wrap {
-  height: 80rpx;
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
 }
 
 .search-input {
   flex: 1;
-  height: 100%;
-  font-size: var(--font-body);
-  padding-right: 16rpx;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: var(--card);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 28rpx;
 }
 
 .search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 140rpx;
-  flex-shrink: 0;
+  height: 88rpx;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 28rpx;
+  font-weight: 500;
 }
 
-/* ========== 操作栏 ========== */
-.action-bar {
-  padding: 8rpx 8rpx 16rpx;
-  margin-bottom: 8rpx;
+.search-btn:active { opacity: 0.85; }
+
+/* 操作栏 */
+.actions {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
 }
 
 .action-item {
-  padding: 12rpx 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 24rpx;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  flex: 1;
+  justify-content: center;
 }
 
-.action-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
+.action-icon { font-size: 28rpx; }
+.action-label { font-size: 24rpx; color: var(--text-sub); }
+
+/* 骨架屏 */
+.skeleton-card {
+  padding: 24rpx;
+  background: var(--card);
+  border-radius: var(--radius);
+  margin-bottom: 16rpx;
+  box-shadow: var(--shadow);
 }
 
-.action-text {
-  font-size: var(--font-caption);
-  color: var(--color-primary);
+.skeleton-line-long {
+  height: 32rpx;
+  width: 60%;
+  margin-bottom: 16rpx;
 }
 
-/* ========== 骨架屏 ========== */
-.skeleton-list {
-  margin-top: 8rpx;
+.skeleton-line-short {
+  height: 24rpx;
+  width: 40%;
 }
 
-.skeleton-card .skeleton-line,
-.skeleton-card .skeleton-block {
-  border-radius: 8rpx;
+/* 包裹卡片 */
+.package-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 16rpx;
 }
 
-/* ========== 包裹卡片 ========== */
-.package-list {
-  margin-top: 8rpx;
-}
-
-.package-header {
-  align-items: flex-start;
-}
+.package-left { flex: 1; min-width: 0; }
 
 .package-waybill {
-  display: flex;
-  flex-direction: column;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.waybill-code {
-  font-size: var(--font-body);
-  font-weight: 500;
-  margin-top: 4rpx;
-  word-break: break-all;
+.package-meta {
+  font-size: 22rpx;
 }
 
-.package-pickup {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.package-code {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: var(--danger);
+  font-family: "DIN", "Helvetica Neue", monospace;
+  margin-left: 16rpx;
   flex-shrink: 0;
-  margin-left: 24rpx;
-}
-
-.pickup-code {
-  font-size: var(--font-pickup);
-  font-weight: 700;
-  line-height: 1;
-  margin-top: 4rpx;
-}
-
-.package-info {
-  flex-wrap: wrap;
-  gap: 12rpx;
-}
-
-.info-tag {
-  font-size: var(--font-caption);
-  color: var(--color-text-secondary);
-  background: var(--color-bg);
-  padding: 4rpx 16rpx;
-  border-radius: 6rpx;
-}
-
-/* ========== 重试按钮 ========== */
-.empty-state .btn-ghost {
-  width: 240rpx;
 }

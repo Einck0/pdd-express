@@ -1,42 +1,39 @@
 /**
- * 主配置文件
- * 所有默认配置项在此定义
- * config.user.js 可覆盖任意字段
+ * 默认配置
+ * 用户本地配置请创建 config.user.js，会自动合并覆盖
  */
-var config = {
-  // API 基础地址（无尾部斜杠）
-  apiBaseUrl: 'https://your-domain.com',
 
-  // 轮播公告内容
-  bannerTexts: [
-    '欢迎使用快递取件助手',
-    '请妥善保管取件码',
-    '如有问题请联系客服'
+var defaults = {
+  // 后端 API 地址（部署时必须在 config.user.js 中覆盖）
+  apiBaseUrl: 'https://your-server.com/express',
+
+  // 轮播公告
+  banners: [
+    '收藏小程序，无需扫码即可查件',
+    '取件时务必核对姓名',
+    '最多添加 5 个手机号',
   ],
+  bannerInterval: 4000,
 
-  // 轮播间隔（ms）
-  bannerInterval: 3000,
+  // 登录重试
+  loginRetries: 3,
+  loginRetryDelay: 2000,
 
-  // wx.login 最大重试次数
-  loginMaxRetries: 3,
+  // 搜索
+  searchMinLength: 4,
 
-  // wx.login 重试间隔（ms）
-  loginRetryDelay: 1000,
-
-  // 请求超时（ms）
-  requestTimeout: 15000
+  // 请求超时
+  timeout: 15000,
 };
 
-// 尝试加载本地覆盖配置
+// 合并用户本地配置
 try {
-  var localConfig = require('./config.user');
-  if (localConfig) {
-    Object.keys(localConfig).forEach(function (key) {
-      config[key] = localConfig[key];
+  var user = require('./config.user');
+  if (user && typeof user === 'object') {
+    Object.keys(user).forEach(function (k) {
+      defaults[k] = user[k];
     });
   }
-} catch (e) {
-  // config.user.js 不存在或加载失败，忽略
-}
+} catch (e) {}
 
-module.exports = config;
+module.exports = defaults;

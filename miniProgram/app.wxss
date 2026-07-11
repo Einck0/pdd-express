@@ -1,172 +1,159 @@
-/**
- * 全局样式
- * 色彩系统、通用类、工具类
- */
-
-/* ========== CSS 变量 ========== */
+/* ═══ 全局变量 ═══ */
 page {
-  --color-primary: #4F7CFF;
-  --color-primary-light: rgba(79, 124, 255, 0.1);
-  --color-success: #07C160;
-  --color-danger: #FA5151;
-  --color-bg: #F6F7FB;
-  --color-card: #FFFFFF;
-  --color-text: #333333;
-  --color-text-secondary: #999999;
-  --color-border: #E8E8E8;
-  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  --radius-card: 16rpx;
-  --radius-btn: 8rpx;
-  --font-title: 36rpx;
-  --font-body: 28rpx;
-  --font-caption: 24rpx;
-  --font-pickup: 64rpx;
+  --primary: #4F7CFF;
+  --primary-light: #EEF2FF;
+  --success: #07C160;
+  --danger: #FA5151;
+  --warning: #FFC300;
+  --bg: #F5F6FA;
+  --card: #FFFFFF;
+  --text: #1A1A2E;
+  --text-sub: #666666;
+  --text-muted: #999999;
+  --border: #EEEEEE;
+  --shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  --radius: 16rpx;
+  --radius-sm: 8rpx;
 
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: var(--font-body);
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  color: var(--text);
+  background: var(--bg);
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ========== 通用工具类 ========== */
+/* ═══ 通用工具类 ═══ */
 
 /* 弹性布局 */
-.flex-row { display: flex; flex-direction: row; align-items: center; }
+.flex { display: flex; }
 .flex-col { display: flex; flex-direction: column; }
-.flex-center { display: flex; justify-content: center; align-items: center; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.flex-1 { flex: 1; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
 
 /* 间距 */
-.p-8 { padding: 8rpx; }
-.p-16 { padding: 16rpx; }
-.p-24 { padding: 24rpx; }
-.p-32 { padding: 32rpx; }
-.p-48 { padding: 48rpx; }
-.mt-16 { margin-top: 16rpx; }
-.mt-24 { margin-top: 24rpx; }
-.mt-32 { margin-top: 32rpx; }
-.mb-16 { margin-bottom: 16rpx; }
-.mb-24 { margin-bottom: 24rpx; }
+.gap-sm { gap: 8rpx; }
+.gap-md { gap: 16rpx; }
+.gap-lg { gap: 24rpx; }
 
-/* 文字 */
-.text-title { font-size: var(--font-title); font-weight: 600; }
-.text-body { font-size: var(--font-body); }
-.text-caption { font-size: var(--font-caption); color: var(--color-text-secondary); }
-.text-center { text-align: center; }
-.text-primary { color: var(--color-primary); }
-.text-danger { color: var(--color-danger); }
+.p-sm { padding: 8rpx 16rpx; }
+.p-md { padding: 16rpx 24rpx; }
+.p-lg { padding: 24rpx 32rpx; }
+.px-lg { padding-left: 32rpx; padding-right: 32rpx; }
+
+.mt-sm { margin-top: 8rpx; }
+.mt-md { margin-top: 16rpx; }
+.mt-lg { margin-top: 24rpx; }
+.mb-md { margin-bottom: 16rpx; }
+.mb-lg { margin-bottom: 24rpx; }
 
 /* 卡片 */
 .card {
-  background: var(--color-card);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 24rpx;
   margin-bottom: 16rpx;
 }
 
 /* 按钮 */
 .btn {
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: 88rpx;
-  min-height: 88rpx;
-  border-radius: var(--radius-btn);
-  font-size: var(--font-body);
+  padding: 0 32rpx;
+  border-radius: var(--radius-sm);
+  font-size: 28rpx;
   font-weight: 500;
   border: none;
-  padding: 0 32rpx;
+  line-height: 1;
 }
 
 .btn::after { border: none; }
 
 .btn-primary {
-  background: var(--color-primary);
+  background: var(--primary);
   color: #FFFFFF;
 }
 
-.btn-primary[disabled] {
-  background: rgba(79, 124, 255, 0.4);
-  color: rgba(255, 255, 255, 0.7);
+.btn-primary:active {
+  opacity: 0.85;
 }
 
 .btn-danger {
-  background: var(--color-danger);
+  background: var(--danger);
   color: #FFFFFF;
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--color-primary);
-  border: 2rpx solid var(--color-primary);
+  color: var(--primary);
+  border: 2rpx solid var(--primary);
 }
 
 .btn-sm {
   height: 64rpx;
-  min-height: 64rpx;
-  font-size: var(--font-caption);
   padding: 0 24rpx;
+  font-size: 24rpx;
 }
 
 /* 输入框 */
-.input-wrap {
-  display: flex;
-  align-items: center;
+.input {
   height: 88rpx;
-  background: #FFFFFF;
-  border: 2rpx solid var(--color-border);
-  border-radius: var(--radius-btn);
   padding: 0 24rpx;
+  background: var(--card);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 28rpx;
+  color: var(--text);
 }
 
-.input-wrap input {
-  flex: 1;
-  height: 100%;
-  font-size: var(--font-body);
+.input-focus {
+  border-color: var(--primary);
 }
 
-.input-wrap-focus {
-  border-color: var(--color-primary);
-}
+/* 文字 */
+.text-primary { color: var(--primary); }
+.text-sub { color: var(--text-sub); }
+.text-muted { color: var(--text-muted); }
+.text-danger { color: var(--danger); }
+.text-success { color: var(--success); }
+.text-bold { font-weight: 600; }
 
 /* 骨架屏 */
-@keyframes shimmer {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+.skeleton {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E8E8E8 50%, #F0F0F0 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
 }
 
-.skeleton {
-  animation: shimmer 1.5s ease-in-out infinite;
-  background: #EEEEEE;
-  border-radius: 8rpx;
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 /* 空状态 */
-.empty-state {
+.empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 48rpx;
+  padding: 80rpx 32rpx;
 }
 
-.empty-state .empty-icon {
-  width: 160rpx;
-  height: 160rpx;
+.empty-icon {
+  font-size: 96rpx;
   margin-bottom: 24rpx;
 }
 
-.empty-state .empty-text {
-  font-size: var(--font-body);
-  color: var(--color-text-secondary);
+.empty-text {
+  font-size: 28rpx;
+  color: var(--text-muted);
 }
 
-/* 安全区域 */
+/* 安全区 */
 .safe-bottom {
-  padding-bottom: calc(env(safe-area-inset-bottom) + 16rpx);
+  padding-bottom: env(safe-area-inset-bottom);
 }

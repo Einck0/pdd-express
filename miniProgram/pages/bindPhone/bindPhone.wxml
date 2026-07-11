@@ -1,107 +1,58 @@
-<!--
-  手机号管理页模板
-  结构：输入区 → 手机号列表 → 协议展开
--->
+<!-- 手机号管理页 -->
 <import src="./agreement.wxml" />
 <import src="./privacy.wxml" />
-<view class="page-container">
+
+<view class="page">
 
   <!-- 输入区 -->
-  <view class="card input-section">
-    <view class="input-label text-caption mb-16">添加手机号</view>
-    <view class="input-wrap {{phoneFocus ? 'input-wrap-focus' : ''}}">
-      <input
-        type="number"
-        maxlength="11"
-        placeholder="请输入手机号"
-        value="{{phoneInput}}"
-        bindinput="onPhoneInput"
-        bindfocus="phoneFocus = true"
-        bindblur="phoneFocus = false"
-      />
+  <view class="card">
+    <input
+      class="input"
+      type="number"
+      maxlength="11"
+      placeholder="输入手机号"
+      value="{{phone}}"
+      bindinput="onPhoneInput"
+    />
+    <view class="agree-row mt-md">
+      <checkbox-group bindchange="onAgreeChange">
+        <checkbox value="agree" checked="{{agreed}}" />
+      </checkbox-group>
+      <text class="agree-text">我已阅读并同意</text>
+      <text class="link" bindtap="showAgreement = !showAgreement">《用户协议》</text>
+      <text class="link" bindtap="showPrivacy = !showPrivacy">《隐私政策》</text>
     </view>
-
-    <!-- 协议勾选 -->
-    <view class="agree-row flex-row mt-24">
-      <view
-        class="checkbox-wrap {{agreeChecked ? 'checked' : ''}}"
-        bindtap="onAgreeChange"
-      >
-        <text wx:if="{{agreeChecked}}">✓</text>
-      </view>
-      <text class="agree-text text-caption">
-        我已阅读并同意
-        <text class="link-text" bindtap="toggleAgreement">《用户协议》</text>
-        和
-        <text class="link-text" bindtap="togglePrivacy">《隐私政策》</text>
-      </text>
-    </view>
-
-    <!-- 添加按钮 -->
-    <button
-      class="btn btn-primary mt-24"
-      disabled="{{adding || !agreeChecked}}"
-      bindtap="onAddPhone"
-    >
-      {{adding ? '添加中...' : '添加手机号'}}
-    </button>
+    <button class="btn btn-primary mt-md" disabled="{{!agreed}}" bindtap="onAdd">添加手机号</button>
   </view>
 
-  <!-- 协议展开区域 -->
+  <!-- 用户协议展开 -->
   <view class="card agreement-card" wx:if="{{showAgreement}}">
-    <view class="agreement-header flex-between">
-      <text class="text-body" style="font-weight: 500;">用户协议</text>
-      <text class="close-btn" bindtap="toggleAgreement">✕</text>
-    </view>
-    <scroll-view scroll-y class="agreement-content">
-      <template is="agreement" data="{{...}}" />
+    <scroll-view scroll-y style="max-height: 500rpx;">
+      <template is="agreement" />
     </scroll-view>
   </view>
 
+  <!-- 隐私政策展开 -->
   <view class="card agreement-card" wx:if="{{showPrivacy}}">
-    <view class="agreement-header flex-between">
-      <text class="text-body" style="font-weight: 500;">隐私政策</text>
-      <text class="close-btn" bindtap="togglePrivacy">✕</text>
-    </view>
-    <scroll-view scroll-y class="agreement-content">
-      <template is="privacy" data="{{...}}" />
+    <scroll-view scroll-y style="max-height: 500rpx;">
+      <template is="privacy" />
     </scroll-view>
   </view>
 
-  <!-- 手机号列表标题 -->
-  <view class="section-title flex-between mt-24 mb-16">
-    <text class="text-body" style="font-weight: 500;">已绑定手机号</text>
-    <text class="text-caption">{{phones.length}} 个</text>
+  <!-- 手机号列表 -->
+  <view wx:if="{{loading}}" class="mt-lg">
+    <view class="skeleton" style="height:100rpx;margin-bottom:16rpx;border-radius:16rpx;" wx:for="{{[1,2]}}" wx:key="*this"></view>
   </view>
 
-  <!-- 加载态 -->
-  <view wx:if="{{loading}}" class="skeleton-list">
-    <view class="skeleton-card card" wx:for="{{[1,2]}}" wx:key="*this">
-      <view class="skeleton flex-between">
-        <view class="skeleton skeleton-line" style="width: 280rpx; height: 32rpx;"></view>
-        <view class="skeleton skeleton-block" style="width: 80rpx; height: 48rpx;"></view>
-      </view>
-    </view>
+  <view wx:elif="{{phones.length === 0}}" class="empty mt-lg">
+    <view class="empty-icon">📱</view>
+    <view class="empty-text">还没有绑定手机号</view>
   </view>
 
-  <!-- 空状态 -->
-  <view wx:elif="{{phones.length === 0}}" class="empty-state">
-    <view class="empty-icon" style="font-size: 120rpx;">📱</view>
-    <text class="empty-text">暂未绑定手机号</text>
-    <text class="text-caption mt-16">添加手机号后即可自动查询快递</text>
-  </view>
-
-  <!-- 手机号卡片列表 -->
-  <view wx:else class="phone-list">
-    <view class="phone-card card flex-between" wx:for="{{phones}}" wx:key="*this">
+  <view wx:else class="mt-lg">
+    <view class="phone-card" wx:for="{{phones}}" wx:key="*this">
       <text class="phone-number">{{item}}</text>
-      <view
-        class="delete-btn btn btn-danger btn-sm"
-        data-phone="{{item}}"
-        bindtap="onDeletePhone"
-      >
-        删除
-      </view>
+      <view class="phone-delete" data-phone="{{item}}" bindtap="onDelete">删除</view>
     </view>
   </view>
 

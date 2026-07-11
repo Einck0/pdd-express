@@ -1,130 +1,56 @@
-/**
- * 手机号管理页样式
- */
+/* 手机号管理页样式 */
+.page { padding: 24rpx; }
 
-.page-container {
-  padding: 24rpx;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
-}
-
-/* ========== 输入区 ========== */
-.input-section {
-  padding: 32rpx;
-}
-
-.input-label {
-  font-weight: 500;
-}
-
-/* ========== 协议勾选 ========== */
 .agree-row {
-  align-items: center;
-}
-
-.checkbox-wrap {
-  width: 36rpx;
-  height: 36rpx;
-  border: 2rpx solid var(--color-border);
-  border-radius: 6rpx;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-right: 12rpx;
-  flex-shrink: 0;
+  gap: 8rpx;
   font-size: 24rpx;
-  color: #FFFFFF;
-  transition: all 0.2s;
+  color: var(--text-muted);
 }
 
-.checkbox-wrap.checked {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+.agree-text { color: var(--text-muted); }
+
+.link {
+  color: var(--primary);
+  font-size: 24rpx;
 }
 
-.agree-text {
-  line-height: 1.5;
-}
-
-.link-text {
-  color: var(--color-primary);
-}
-
-/* ========== 添加按钮 ========== */
-.input-section .btn {
-  width: 100%;
-}
-
-/* ========== 协议展开 ========== */
 .agreement-card {
-  margin-top: 16rpx;
-}
-
-.agreement-header {
-  padding-bottom: 16rpx;
-  border-bottom: 2rpx solid var(--color-border);
-  margin-bottom: 16rpx;
-}
-
-.close-btn {
-  font-size: 32rpx;
-  color: var(--color-text-secondary);
-  padding: 8rpx;
-}
-
-.agreement-content {
-  max-height: 600rpx;
-  overflow-y: auto;
-  font-size: var(--font-caption);
-  color: var(--color-text-secondary);
+  font-size: 22rpx;
+  color: var(--text-sub);
   line-height: 1.8;
 }
 
-.agreement-content view {
-  margin-bottom: 16rpx;
-}
-
-.yhxy {
-  font-size: var(--font-body);
-  font-weight: 600;
-  color: var(--color-text);
-  display: block;
-  margin-bottom: 16rpx;
-}
-
-.myOne {
-  padding: 8rpx;
-}
-
-.my-div view {
-  margin-bottom: 12rpx;
-}
-
-/* ========== 列表标题 ========== */
-.section-title {
-  padding: 0 8rpx;
-}
-
-/* ========== 手机号卡片 ========== */
-.phone-list {
-  margin-top: 8rpx;
-}
-
+/* 手机号卡片 */
 .phone-card {
-  padding: 24rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 16rpx;
 }
 
 .phone-number {
   font-size: 32rpx;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: "DIN", "Helvetica Neue", monospace;
   letter-spacing: 2rpx;
 }
 
-.delete-btn {
-  flex-shrink: 0;
-  width: 120rpx;
+.phone-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12rpx 28rpx;
+  background: rgba(250, 81, 81, 0.1);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  font-size: 24rpx;
+  font-weight: 500;
 }
 
-/* ========== 骨架屏 ========== */
-.skeleton-list {
-  margin-top: 8rpx;
-}
+.phone-delete:active { opacity: 0.8; }
