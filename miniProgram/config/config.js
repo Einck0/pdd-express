@@ -4,8 +4,8 @@
  */
 
 var defaults = {
-  // 后端 API 地址（部署时必须在 config.user.js 中覆盖）
-  apiBaseUrl: 'https://your-server.com/express',
+  // 后端 API 地址
+  apiBaseUrl: 'https://example.com/express',
 
   // 轮播公告
   banners: [
