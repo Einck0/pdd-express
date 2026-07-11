@@ -1,0 +1,39 @@
+name: Upload Mini Program
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - 'miniProgram/**'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install miniprogram-ci -g
+
+      - name: Write upload key
+        run: echo "${{ secrets.WX_UPLOAD_KEY }}" > /tmp/upload.key
+
+      - name: Upload to WeChat
+        run: |
+          version=$(git rev-parse --short HEAD)
+          branch=${GITHUB_REF_NAME}
+          desc="[${branch}] ${GITHUB_SHA::7} - $(git log -1 --pretty=%s)"
+          miniprogram-ci upload \
+            --appid ${{ secrets.WX_APPID }} \
+            --project-path miniProgram \
+            --private-key-path /tmp/upload.key \
+            --version "${version}" \
+            --desc "${desc}" \
+            --robot 1
+
+      - name: Cleanup
+        if: always()
+        run: rm -f /tmp/upload.key
