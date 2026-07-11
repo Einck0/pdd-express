@@ -1,121 +1,153 @@
-// pages/index/index.js
-const app = getApp();
-const config = require('../../config/config');
+/**
+ * 首页 — 查件
+ * 功能：轮播公告、搜索查件、包裹列表（点击复制取件码、长按复制单号）
+ */
+
+var app = getApp();
+
+var _debounceTimer = null;
 
 Page({
   data: {
-    bannerIndex: 0,
-    bannerTexts: config.bannerTexts,
-    searchInput: '',
+    notices: [],
+    noticeIdx: 0,
+    keyword: '',
+    searchFocus: false,
     packages: [],
-    phoneNumbers: [],
+    phones: [],
+    hasPhones: false,
     loading: true,
-    loggedIn: false,
+    showToast: false,
+    toastText: '',
   },
 
-  _bannerTimer: null,
+  /* ── 生命周期 ── */
 
-  onLoad() {
-    this._startBanner();
+  onLoad: function () {
+    this.setData({ notices: app.config.banners || [] });
+    this._startNotice();
   },
 
-  onShow() {
-    this._initData();
+  onShow: function () {
+    var that = this;
+    app.onLogin(function () { that._loadData(); });
   },
 
-  onUnload() {
-    this._stopBanner();
+  onUnload: function () {
+    clearInterval(this._noticeTimer);
   },
 
-  onPullDownRefresh() {
-    this._initData().finally(() => wx.stopPullDownRefresh());
+  onPullDownRefresh: function () {
+    var that = this;
+    this._loadData().finally(function () {
+      wx.stopPullDownRefresh();
+    });
   },
 
-  // ---- Banner ----
-  _startBanner() {
-    this._bannerTimer = setInterval(() => {
-      this.setData({
-        bannerIndex: (this.data.bannerIndex + 1) % this.data.bannerTexts.length,
-      });
-    }, config.bannerInterval);
-  },
+  /* ── 公告轮播 ── */
 
-  _stopBanner() {
-    if (this._bannerTimer) {
-      clearInterval(this._bannerTimer);
-      this._bannerTimer = null;
-    }
-  },
-
-  // ---- 初始化数据 ----
-  async _initData() {
-    this.setData({ loading: true });
-
-    try {
-      const openid = await app.ensureLogin();
-      this.setData({ loggedIn: true });
-      await this._loadPhones(openid);
-    } catch (e) {
-      console.error('初始化失败:', e);
-    } finally {
-      this.setData({ loading: false });
-    }
-  },
-
-  async _loadPhones(wxid) {
-    try {
-      const res = await app.api.getPhones(wxid);
-      const phones = res.phones || [];
-      this.setData({ phoneNumbers: phones });
-
-      if (phones.length === 0) {
-        wx.switchTab({ url: '/pages/bindPhone/bindPhone' });
-      } else {
-        await this._loadPackages(wxid);
+  _startNotice: function () {
+    var that = this;
+    var interval = app.config.bannerInterval || 4000;
+    this._noticeTimer = setInterval(function () {
+      if (that.data.notices.length > 1) {
+        that.setData({ noticeIdx: (that.data.noticeIdx + 1) % that.data.notices.length });
       }
-    } catch (e) {
-      // api 已自动 toast
+    }, interval);
+  },
+
+  /* ── 数据加载 ── */
+
+  _loadData: function () {
+    var that = this;
+    return app.api.getPhones().then(function (data) {
+      var phones = data.phones || [];
+      that.setData({ phones: phones, hasPhones: phones.length > 0 });
+      if (phones.length === 0) {
+        that.setData({ loading: false, packages: [] });
+        return;
+      }
+      return app.api.getPackages().then(function (d2) {
+        that.setData({ packages: d2.packages || [], loading: false });
+      });
+    }).catch(function () {
+      that.setData({ loading: false });
+    });
+  },
+
+  /* ── 搜索 ── */
+
+  onInput: function (e) {
+    var that = this;
+    this.setData({ keyword: e.detail.value });
+    // 防抖：输入变化时自动搜索
+    clearTimeout(_debounceTimer);
+    if (e.detail.value.length >= (app.config.searchMinLength || 4)) {
+      _debounceTimer = setTimeout(function () { that.onSearch(); }, 300);
     }
   },
 
-  async _loadPackages(wxid) {
-    try {
-      const res = await app.api.getPackages(wxid || app.globalData.wxid);
-      this.setData({ packages: res.packages || [] });
-    } catch (e) {
-      // api 已自动 toast
-    }
+  onClear: function () {
+    this.setData({ keyword: '' });
+    this._loadData();
   },
 
-  // ---- 事件 ----
-  onSearchInput(e) {
-    this.setData({ searchInput: e.detail.value });
-  },
-
-  async onSearch() {
-    const keyword = this.data.searchInput.trim();
-    if (!keyword || keyword.length < config.searchMinLength) {
-      wx.showToast({ title: '请输入正确的手机号或单号', icon: 'none' });
+  onSearch: function () {
+    var that = this;
+    var kw = this.data.keyword.trim();
+    if (kw.length < (app.config.searchMinLength || 4)) {
+      this._toast('请输入至少4位单号或号码');
       return;
     }
-    if (!app.globalData.wxid) return;
 
-    try {
-      const res = await app.api.searchPackage(app.globalData.wxid, keyword);
-      this.setData({ packages: res.packages || [] });
-      if ((res.packages || []).length === 0) {
-        wx.showToast({ title: '未查到相关包裹', icon: 'none' });
+    wx.showLoading({ title: '查询中…' });
+    app.api.searchPackages(kw).then(function (data) {
+      var list = data.packages || [];
+      that.setData({ packages: list });
+      if (list.length === 0) {
+        that._toast('未查询到包裹');
       }
-    } catch (e) {
-      // api 已自动 toast
-    }
+    }).finally(function () {
+      wx.hideLoading();
+    });
   },
 
-  onRefresh() {
-    this._initData();
+  onRefresh: function () {
+    this.setData({ loading: true });
+    this._loadData();
   },
 
-  onGoToBind() {
+  /* ── 包裹操作 ── */
+
+  onCopyCode: function (e) {
+    var code = e.currentTarget.dataset.code;
+    if (!code) return;
+    wx.setClipboardData({
+      data: code,
+      success: function () { wx.showToast({ title: '取件码已复制', icon: 'success' }); },
+    });
+  },
+
+  onCopyWaybill: function (e) {
+    var wb = e.currentTarget.dataset.waybill;
+    if (!wb) return;
+    wx.setClipboardData({
+      data: wb,
+      success: function () { wx.showToast({ title: '运单号已复制', icon: 'success' }); },
+    });
+  },
+
+  /* ── 导航 ── */
+
+  onGoBindPhone: function () {
     wx.switchTab({ url: '/pages/bindPhone/bindPhone' });
+  },
+
+  /* ── 工具 ── */
+
+  _toast: function (text) {
+    this.setData({ showToast: true, toastText: text });
+    var that = this;
+    setTimeout(function () { that.setData({ showToast: false }); }, 2000);
   },
 });

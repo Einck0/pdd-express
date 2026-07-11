@@ -1,95 +1,92 @@
-// utils/api.js - 统一 API 请求封装
-const config = require('../config/config');
-
-let loadingCount = 0;
-
-function showLoading() {
-  if (loadingCount === 0) {
-    wx.showLoading({ title: '加载中...', mask: false });
-  }
-  loadingCount++;
-}
-
-function hideLoading() {
-  loadingCount--;
-  if (loadingCount <= 0) {
-    loadingCount = 0;
-    wx.hideLoading();
-  }
-}
-
 /**
- * 统一请求方法
- * @param {string} method - HTTP 方法
- * @param {string} path - API 路径（不含 base）
- * @param {object} data - 请求体
- * @param {object} opts - 额外选项
- * @param {boolean} opts.showLoading - 是否显示 loading（默认 true）
- * @param {boolean} opts.showError - 是否自动 toast 错误（默认 true）
- * @returns {Promise<object>} - 响应数据（已解包 res.data）
+ * API 统一封装
+ * 集中管理所有接口，自动携带 Authorization token
  */
-function request(method, path, data = {}, opts = {}) {
-  const { showLoading: showLd = true, showError = true } = opts;
 
-  if (showLd) showLoading();
+var config = require('../config/config');
 
-  return new Promise((resolve, reject) => {
+var BASE = config.apiBaseUrl;
+var TIMEOUT = config.timeout || 15000;
+
+/* ── 底层请求 ── */
+
+function request(method, path, data) {
+  return new Promise(function (resolve, reject) {
+    var token = '';
+    try { token = wx.getStorageSync('wxid') || ''; } catch (e) {}
+
+    var header = { 'content-type': 'application/json' };
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token;
+    }
+
     wx.request({
-      url: config.apiBaseUrl + path,
-      method: method.toUpperCase(),
-      data,
-      header: { 'content-type': 'application/json' },
-      success(res) {
+      url: BASE + path,
+      method: method,
+      data: data || {},
+      header: header,
+      timeout: TIMEOUT,
+      success: function (res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data);
-        } else {
-          const msg = (res.data && res.data.message) || `请求失败 (${res.statusCode})`;
-          if (showError) {
-            wx.showToast({ title: msg, icon: 'none', duration: 2000 });
+          var body = res.data || {};
+          // 兼容两种格式：{code,data} 或 {success,data}
+          if (body.code === 0) {
+            resolve(body.data || {});
+          } else if (body.success) {
+            resolve(body.data || body);
+          } else {
+            var msg = body.message || body.error || '请求失败';
+            wx.showToast({ title: msg, icon: 'none' });
+            reject({ code: body.code, message: msg });
           }
-          reject({ statusCode: res.statusCode, data: res.data, message: msg });
+        } else if (res.statusCode === 401) {
+          wx.showToast({ title: '请重新进入小程序', icon: 'none' });
+          reject({ code: 401, message: 'token 失效' });
+        } else {
+          var msg2 = (res.data && (res.data.message || res.data.error)) || '请求失败';
+          wx.showToast({ title: msg2, icon: 'none' });
+          reject({ statusCode: res.statusCode, message: msg2 });
         }
       },
-      fail(err) {
-        const msg = '网络错误，请检查网络连接';
-        if (showError) {
-          wx.showToast({ title: msg, icon: 'none', duration: 2000 });
-        }
-        reject({ message: msg, error: err });
-      },
-      complete() {
-        if (showLd) hideLoading();
+      fail: function () {
+        wx.showToast({ title: '网络连接失败', icon: 'none' });
+        reject({ message: '网络错误' });
       },
     });
   });
 }
 
-// ---- 业务 API ----
+/* ── 接口 ── */
 
-const wxLogin = (code) =>
-  request('POST', '/wxlogin', { code }, { showLoading: false });
+function wxLogin(code) {
+  return request('POST', '/wxlogin', { code: code });
+}
 
-const getPhones = (wxid) =>
-  request('GET', `/phones/${wxid}`);
+function getPhones() {
+  return request('GET', '/phones');
+}
 
-const addPhone = (wxid, phone) =>
-  request('POST', `/phones/${wxid}`, { phone });
+function addPhone(phone) {
+  return request('POST', '/phones', { phone: phone });
+}
 
-const deletePhone = (wxid, phone) =>
-  request('DELETE', `/phones/${wxid}`, { phone });
+function deletePhone(phone) {
+  return request('DELETE', '/phones', { phone: phone });
+}
 
-const getPackages = (wxid) =>
-  request('GET', `/package/${wxid}`);
+function getPackages() {
+  return request('GET', '/package');
+}
 
-const searchPackage = (wxid, keyword) =>
-  request('POST', `/package/${wxid}`, { keyword });
+function searchPackages(keyword) {
+  return request('POST', '/package', { keyword: keyword });
+}
 
 module.exports = {
-  request,
-  wxLogin,
-  getPhones,
-  addPhone,
-  deletePhone,
-  getPackages,
-  searchPackage,
+  wxLogin: wxLogin,
+  getPhones: getPhones,
+  addPhone: addPhone,
+  deletePhone: deletePhone,
+  getPackages: getPackages,
+  searchPackages: searchPackages,
 };

@@ -1,2 +1,10 @@
+# 用户本地配置（含实际 API 地址）
 config/config.user.js
+
+# 微信开发者工具私有配置
 project.private.config.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+node_modules/

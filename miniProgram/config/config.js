@@ -1,25 +1,39 @@
-// config/config.js - 主配置（会被 config.user.js 覆盖）
-const config = {
-  apiBaseUrl: 'https://api.example.com/express',
-  bannerTexts: [
+/**
+ * 默认配置
+ * 用户本地配置请创建 config.user.js，会自动合并覆盖
+ */
+
+var defaults = {
+  // 后端 API 地址（部署时必须在 config.user.js 中覆盖）
+  apiBaseUrl: 'https://your-server.com/express',
+
+  // 轮播公告
+  banners: [
     '收藏小程序，无需扫码即可查件',
     '取件时务必核对姓名',
-    '最多添加5个手机号',
+    '最多添加 5 个号码',
   ],
-  bannerInterval: 5000,
-  loginMaxRetries: 3,
-  loginRetryDelay: 3000,
-  searchMinLength: 11,
+  bannerInterval: 4000,
+
+  // 登录重试
+  loginRetries: 3,
+  loginRetryDelay: 2000,
+
+  // 搜索
+  searchMinLength: 4,
+
+  // 请求超时
+  timeout: 15000,
 };
 
-// 尝试加载本地覆盖配置
+// 合并用户本地配置
 try {
-  const local = require('./config.user.js');
-  if (local) {
-    Object.assign(config, local);
+  var user = require('./config.user');
+  if (user && typeof user === 'object') {
+    Object.keys(user).forEach(function (k) {
+      defaults[k] = user[k];
+    });
   }
-} catch (e) {
-  // 本地配置不存在，使用默认值
-}
+} catch (e) {}
 
-module.exports = config;
+module.exports = defaults;

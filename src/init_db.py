@@ -1,10 +1,16 @@
-from settings import get_settings
-from database import db
+"""
+数据库初始化脚本
+创建 users 和 user_phones 表。支持 SQLite、MySQL、PostgreSQL。
+"""
+
+from config import get_settings
+from models.database import db
 
 settings = get_settings()
 
 
 def init_db():
+    """初始化数据库表结构"""
     with db.session() as conn:
         if settings.db_backend == "mysql":
             conn.execute(
@@ -75,7 +81,7 @@ def init_db():
             conn.execute(
                 "CREATE INDEX IF NOT EXISTS idx_user_phones_wxid ON user_phones(wxid)"
             )
-    print(f"Database schema initialized with backend: {settings.db_backend}")
+    print(f"数据库初始化完成 | backend: {settings.db_backend}")
 
 
 if __name__ == "__main__":

@@ -1,22 +1,28 @@
-from typing import Union, Dict
+"""
+包裹查询服务
+负责与拼多多 API 交互，管理认证 cookie 和 anti-content，
+提供包裹查询能力。
+"""
+
+import os
+from typing import Dict, Union
 
 import execjs
-import os
 import requests
 
-from DBService import DBService
+from config import get_settings
 from logging_config import configure_logging
-from settings import get_settings
 
 logger = configure_logging("package_service")
-REQUSET_URL = "https://mdkd-api.pinduoduo.com/api/orion/op/package/search"
+REQUEST_URL = "https://mdkd-api.pinduoduo.com/api/orion/op/package/search"
 
 
 class PackageService:
+    """包裹查询服务（有状态，管理 cookie 和 anti-content）"""
+
     def __init__(self):
         self.settings = get_settings()
         self.script_dir = os.path.dirname(os.path.realpath(__file__))
-        self.db = DBService()
 
         self.mobile = self.settings.pdd_mobile
         self.encrypted_password = self.settings.pdd_encrypted_password
@@ -51,6 +57,7 @@ class PackageService:
             self.update_sub_pass_id()
 
     def parse_cookie_string(self, cookie_str: str) -> Dict[str, str]:
+        """解析 cookie 字符串为字典"""
         cookies = {}
         if not cookie_str:
             return cookies
@@ -63,25 +70,43 @@ class PackageService:
         return cookies
 
     def set_sub_pass_id(self, sub_pass_id: str) -> None:
+        """手动设置 SUB_PASS_ID"""
         self.cookies["SUB_PASS_ID"] = str(sub_pass_id)
 
     def set_cookies(self, cookie_string: str) -> None:
-        """Replace all cookies from a full cookie string."""
+        """用完整的 cookie 字符串替换所有 cookie"""
         self.cookies = self.parse_cookie_string(cookie_string)
         self.cookies["JSESSIONID"] = self.cookies.get("JSESSIONID", "")
-        logger.info("Cookies fully replaced, keys: %s", list(self.cookies.keys()))
+        logger.info("Cookies 已完全替换, keys: %s", list(self.cookies.keys()))
 
     def merge_cookies(self, cookie_dict: Dict[str, str]) -> None:
-        """Merge individual cookie key-value pairs into current cookies."""
+        """合并单个 cookie 键值对到当前 cookies"""
         for k, v in cookie_dict.items():
             self.cookies[k] = v
-        logger.info("Cookies merged, updated keys: %s", list(cookie_dict.keys()))
+        logger.info("Cookies 已合并, 更新的 keys: %s", list(cookie_dict.keys()))
 
     def get_cookie_string(self) -> str:
-        """Return current cookies as a semicolon-separated string."""
+        """返回当前 cookies 的分号分隔字符串"""
         return "; ".join(f"{k}={v}" for k, v in self.cookies.items() if v)
 
+    def get_cookie_keys(self) -> list:
+        """返回当前 cookie 的 key 列表"""
+        return list(self.cookies.keys())
+
+    def persist_cookies_to_env(self):
+        """将当前 cookie 持久化到 .env 文件"""
+        from config import update_env_value
+        new_cookie_str = self.get_cookie_string()
+        try:
+            update_env_value("PDD_COOKIE_STRING", new_cookie_str)
+            logger.info("Cookie 已持久化到 .env")
+            return True
+        except Exception as e:
+            logger.error("Cookie 持久化失败: %s", e)
+            return False
+
     def get_sub_pass_id_from_login(self) -> str | None:
+        """通过模拟登录 API 获取 SUB_PASS_ID"""
         logger.info("尝试通过模拟登录 API 请求获取 SUB_PASS_ID...")
         login_url = "https://mdkd-api.pinduoduo.com/sixers/api/user/loginByMobile"
 
@@ -124,6 +149,7 @@ class PackageService:
             return None
 
     def update_sub_pass_id(self):
+        """更新 SUB_PASS_ID（自动重试）"""
         logger.info("开始更新 SUB_PASS_ID")
         new_sub_pass_id = self.get_sub_pass_id_from_login()
         if new_sub_pass_id:
@@ -141,7 +167,17 @@ class PackageService:
         return None
 
     def update_anti_content(self):
-        js_file_path = os.path.join(self.script_dir, "res.js")
+        """通过 res.js 生成 anti-content 请求头"""
+        # res.js 在 src/ 目录下
+        js_file_path = os.path.join(os.path.dirname(self.script_dir), "res.js")
+        if not os.path.exists(js_file_path):
+            # 兼容：如果 services/ 和 src/ 同级
+            js_file_path = os.path.join(self.script_dir, "res.js")
+        # 回退到 src/res.js
+        if not os.path.exists(js_file_path):
+            from config import SRC_DIR
+            js_file_path = str(SRC_DIR / "res.js")
+
         try:
             with open(js_file_path, encoding="utf-8") as f:
                 js_code = f.read()
@@ -154,7 +190,8 @@ class PackageService:
         except Exception as e:
             logger.error("Failed to get anti-content: %s", e)
 
-    def get_responese(self, code):
+    def get_response(self, code):
+        """发送包裹查询请求"""
         payload = {
             "content": str(code),
             "selected": False,
@@ -163,18 +200,19 @@ class PackageService:
             "waybill_status": 100,
         }
         return requests.post(
-            REQUSET_URL,
+            REQUEST_URL,
             headers=self.headers,
             cookies=self.cookies,
             json=payload,
         )
 
-    def get_info_from_response(self, response):
+    def parse_packages(self, response):
+        """从 API 响应中提取包裹信息列表"""
         try:
             data = response.json()
             if data.get("error_code", 0) != 0:
                 logger.error(
-                    "API returned error: %s",
+                    "API 返回错误: %s",
                     data.get("error_msg", "Unknown error"),
                 )
                 return []
@@ -190,11 +228,13 @@ class PackageService:
                 for item in details
             ]
         except Exception as e:
-            logger.error("Error parsing response: %s", e)
+            logger.error("解析响应失败: %s", e)
             return []
 
     def get_packages(self, code: Union[int, str]):
+        """查询包裹列表，自动重试刷新凭证"""
         code = str(code)
+        # 测试用手机号
         if code == "11111111111":
             return [
                 {
@@ -219,43 +259,32 @@ class PackageService:
         if len(code) < 5 or len(code) == 6:
             return []
 
-        response = self.get_responese(code)
+        response = self.get_response(code)
         if self._response_is_valid(response):
-            return self.get_info_from_response(response)
+            return self.parse_packages(response)
 
-        logger.warning("Initial request failed, attempting to refresh credentials and retry.")
+        logger.warning("初次请求失败，尝试刷新凭证后重试。")
         self.update_anti_content()
         self.update_sub_pass_id()
-        response = self.get_responese(code)
+        response = self.get_response(code)
         if self._response_is_valid(response):
-            return self.get_info_from_response(response)
+            return self.parse_packages(response)
 
-        raise Exception("Failed to get package information.")
+        raise Exception("获取包裹信息失败。")
 
     def _response_is_valid(self, response):
+        """校验 API 响应是否有效"""
         if response.status_code != 200:
-            logger.error("API request failed with status code: %s", response.status_code)
+            logger.error("API 请求失败，状态码: %s", response.status_code)
             return False
 
         try:
             response_data = response.json()
             if response_data.get("error_code", 0) != 0:
-                logger.error("API returned error code: %s", response_data.get("error_code"))
+                logger.error("API 返回错误码: %s", response_data.get("error_code"))
                 return False
         except ValueError:
-            logger.error("Response is not valid JSON.")
+            logger.error("响应不是有效的 JSON。")
             return False
 
-        return True
-
-        try:
-            data = response.json()
-            if data.get("success", False) is True:
-                return True
-            if not data.get("result", {}).get("detail"):
-                logger.warning("API response contains no package details.")
-                return False
-        except Exception as e:
-            logger.error("Error validating response: %s", e)
-            return False
         return True

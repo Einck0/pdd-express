@@ -1,102 +1,95 @@
-// pages/bindPhone/bindPhone.js
-const app = getApp();
+/**
+ * 号码管理页
+ * 功能：添加/删除号码
+ */
+
+var app = getApp();
 
 Page({
   data: {
-    phoneInput: '',
-    phoneNumbers: [],
-    agreeTerms: false,
-    showAgreement: false,
-    showPrivacy: false,
+    phone: '',
+    inputFocus: false,
+    phones: [],
     loading: true,
+    adding: false,
   },
 
-  onShow() {
-    this._loadPhones();
+  onShow: function () {
+    var that = this;
+    app.onLogin(function () { that._loadPhones(); });
   },
 
-  async _loadPhones() {
-    if (!app.globalData.wxid) {
-      try { await app.ensureLogin(); } catch (e) { return; }
-    }
-    this.setData({ loading: true });
-    try {
-      const res = await app.api.getPhones(app.globalData.wxid);
-      this.setData({ phoneNumbers: res.phones || [] });
-    } catch (e) {
-      // api 已自动 toast
-    } finally {
-      this.setData({ loading: false });
-    }
-  },
+  /* ── 数据 ── */
 
-  onPhoneInput(e) {
-    this.setData({ phoneInput: e.detail.value });
-  },
-
-  onAgreeChange(e) {
-    this.setData({ agreeTerms: e.detail.value.length > 0 });
-  },
-
-  async onAdd() {
-    const phone = this.data.phoneInput.trim();
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的11位手机号', icon: 'none' });
-      return;
-    }
-    if (!this.data.agreeTerms) {
-      wx.showToast({ title: '请先同意用户协议', icon: 'none' });
-      return;
-    }
-
-    const res = await new Promise((resolve) => {
-      wx.showModal({
-        title: '确认添加',
-        content: `添加手机号 ${phone} ？`,
-        success: resolve,
-      });
+  _loadPhones: function () {
+    var that = this;
+    app.api.getPhones().then(function (data) {
+      that.setData({ phones: data.phones || [], loading: false });
+    }).catch(function () {
+      that.setData({ loading: false });
     });
-    if (!res.confirm) return;
-
-    try {
-      await app.api.addPhone(app.globalData.wxid, phone);
-      wx.showToast({ title: '添加成功', icon: 'success' });
-      this.setData({ phoneInput: '' });
-      this._loadPhones();
-    } catch (e) {
-      // api 已自动 toast
-    }
   },
 
-  onDelete(e) {
-    const phone = e.currentTarget.dataset.phone;
+  /* ── 输入 ── */
+
+  onPhoneInput: function (e) {
+    this.setData({ phone: e.detail.value });
+  },
+
+  onInputFocus: function () {
+    this.setData({ inputFocus: true });
+  },
+
+  onInputBlur: function () {
+    this.setData({ inputFocus: false });
+  },
+
+  onPhoneClear: function () {
+    this.setData({ phone: '' });
+  },
+
+  /* ── 添加 ── */
+
+  onAdd: function () {
+    var that = this;
+    var phone = this.data.phone.trim();
+
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的号码', icon: 'none' });
+      return;
+    }
+
+    this.setData({ adding: true });
+    app.api.addPhone(phone).then(function () {
+      wx.showToast({ title: '添加成功', icon: 'success' });
+      that.setData({ phone: '', adding: false });
+      that._loadPhones();
+    }).catch(function () {
+      that.setData({ adding: false });
+    });
+  },
+
+  /* ── 删除 ── */
+
+  onDelete: function (e) {
+    var that = this;
+    var phone = e.currentTarget.dataset.phone;
+    var masked = phone ? (phone.slice(0, 3) + '****' + phone.slice(7)) : '';
+
     wx.showModal({
       title: '确认删除',
-      content: `删除手机号 ${phone} ？`,
-      success: async (res) => {
+      content: '确定要删除 ' + masked + ' 吗？',
+      confirmColor: '#fa5151',
+      success: function (res) {
         if (!res.confirm) return;
-        try {
-          await app.api.deletePhone(app.globalData.wxid, phone);
-          wx.showToast({ title: '删除成功', icon: 'success' });
-          this._loadPhones();
-        } catch (e) {
-          // api 已自动 toast
-        }
+        wx.showLoading({ title: '删除中…' });
+        app.api.deletePhone(phone).then(function () {
+          wx.showToast({ title: '已删除', icon: 'success' });
+          that._loadPhones();
+        }).finally(function () {
+          wx.hideLoading();
+        });
       },
-    });
-  },
-
-  toggleAgreement() {
-    this.setData({
-      showAgreement: !this.data.showAgreement,
-      showPrivacy: false,
-    });
-  },
-
-  togglePrivacy() {
-    this.setData({
-      showPrivacy: !this.data.showPrivacy,
-      showAgreement: false,
     });
   },
 });

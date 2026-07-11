@@ -1,68 +1,77 @@
-// app.js
-const config = require('./config/config');
-const api = require('./utils/api');
+/**
+ * 应用入口
+ * 微信登录 + 全局状态管理
+ */
+
+var config = require('./config/config');
+var api = require('./utils/api');
 
 App({
   globalData: {
     wxid: null,
+    loginCallbacks: [],
   },
 
-  config,
-  api,
+  config: config,
+  api: api,
 
-  onLaunch() {
-    this.ensureLogin();
+  onLaunch: function () {
+    this.login();
   },
 
   /**
-   * 确保已登录，带重试
-   * @param {number} retries - 已重试次数（内部用）
-   * @returns {Promise<string>} openid
+   * 等待登录完成
+   * @param {Function} cb - 回调，参数为 wxid
    */
-  ensureLogin(retries = 0) {
+  onLogin: function (cb) {
     if (this.globalData.wxid) {
-      return Promise.resolve(this.globalData.wxid);
+      cb(this.globalData.wxid);
+    } else {
+      this.globalData.loginCallbacks.push(cb);
     }
+  },
 
-    return new Promise((resolve, reject) => {
-      wx.login({
-        success: (loginRes) => {
-          if (!loginRes.code) {
-            this._retryOrReject(retries, '获取登录凭证失败', resolve, reject);
-            return;
+  /**
+   * 微信登录
+   * 成功后存储 token，触发等待回调
+   */
+  login: function (attempt) {
+    var that = this;
+    attempt = attempt || 0;
+
+    wx.login({
+      success: function (res) {
+        if (!res.code) {
+          that._retry(attempt, '获取 code 失败');
+          return;
+        }
+        api.wxLogin(res.code).then(function (data) {
+          var wxid = data.token || data.wxid || data.openid || '';
+          if (wxid) {
+            that.globalData.wxid = wxid;
+            try { wx.setStorageSync('wxid', wxid); } catch (e) {}
+            that.globalData.loginCallbacks.forEach(function (cb) { cb(wxid); });
+            that.globalData.loginCallbacks = [];
+          } else {
+            that._retry(attempt, 'token 为空');
           }
-
-          api
-            .wxLogin(loginRes.code)
-            .then((data) => {
-              if (data && data.openid) {
-                this.globalData.wxid = data.openid;
-                resolve(data.openid);
-              } else {
-                this._retryOrReject(retries, '登录返回数据异常', resolve, reject);
-              }
-            })
-            .catch((err) => {
-              this._retryOrReject(retries, err.message || '登录请求失败', resolve, reject);
-            });
-        },
-        fail: () => {
-          this._retryOrReject(retries, 'wx.login 调用失败', resolve, reject);
-        },
-      });
+        }).catch(function () {
+          that._retry(attempt, '登录请求失败');
+        });
+      },
+      fail: function () {
+        that._retry(attempt, 'wx.login 调用失败');
+      },
     });
   },
 
-  _retryOrReject(retries, msg, resolve, reject) {
-    if (retries < config.loginMaxRetries) {
-      console.warn(`登录失败: ${msg}，第${retries + 1}次重试...`);
-      setTimeout(() => {
-        this.ensureLogin(retries + 1).then(resolve).catch(reject);
-      }, config.loginRetryDelay);
+  _retry: function (attempt, reason) {
+    var that = this;
+    console.warn('[login]', reason, 'attempt=' + attempt);
+    if (attempt < that.config.loginRetries) {
+      setTimeout(function () { that.login(attempt + 1); }, that.config.loginRetryDelay);
     } else {
-      console.error('多次登录失败:', msg);
-      wx.showToast({ title: '登录失败，请稍后重试', icon: 'none', duration: 2500 });
-      reject(new Error(msg));
+      wx.showToast({ title: '登录失败，请稍后重试', icon: 'none', duration: 3000 });
     }
   },
 });
