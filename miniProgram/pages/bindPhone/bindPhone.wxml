@@ -43,7 +43,7 @@
   <block wx:else>
     <view class="phone-item" wx:for="{{phones}}" wx:key="*this">
       <view class="phone-main">
-        <view class="phone-avatar">{{item[0]}}</view>
+        <view class="phone-avatar">{{index + 1}}</view>
         <view class="phone-detail">
           <view class="phone-number">{{item}}</view>
           <view class="phone-tag">已绑定</view>
