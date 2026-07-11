@@ -1,50 +1,16 @@
-/* 首页样式 — v2 */
+/* 首页样式 — v3（去掉 hero，包裹卡片还原） */
 
 .page {
-  padding: 0 0 var(--space-xl);
+  padding: var(--space-md);
   min-height: 100vh;
   box-sizing: border-box;
-}
-
-/* ── 顶部品牌区 ── */
-.hero {
-  background: linear-gradient(135deg, var(--color-brand) 0%, #06ad56 100%);
-  padding: var(--space-xl) var(--space-lg) var(--space-lg);
-  margin-bottom: calc(-1 * var(--space-md));
-  position: relative;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: -2rpx;
-  left: 0;
-  right: 0;
-  height: 40rpx;
-  background: var(--color-bg);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.hero-title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 6rpx;
-}
-
-.hero-desc {
-  font-size: var(--text-sm);
-  color: rgba(255, 255, 255, .75);
 }
 
 /* ── 搜索 ── */
 .search-wrap {
   display: flex;
   gap: var(--space-sm);
-  padding: 0 var(--space-lg);
   margin-bottom: var(--space-md);
-  position: relative;
-  z-index: 1;
 }
 
 .search-wrap .input-wrap {
@@ -72,7 +38,6 @@
 .shortcuts {
   display: flex;
   gap: var(--space-sm);
-  padding: 0 var(--space-lg);
   margin-bottom: var(--space-md);
 }
 
@@ -99,8 +64,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin: 0 var(--space-lg) var(--space-md);
   padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
   background: linear-gradient(135deg, #fffbe6 0%, #fff7cc 100%);
   border-radius: var(--radius-md);
   border: 2rpx solid rgba(255, 195, 0, .2);
@@ -118,14 +83,11 @@
 }
 
 /* ── 骨架屏 ── */
-.skeleton-card {
-  margin: 0 var(--space-lg) var(--space-sm);
-  padding: var(--space-lg) !important;
-}
+.skeleton-card { padding: var(--space-lg) !important; }
 
 /* ── 包裹列表 ── */
 .package-list {
-  padding: 0 var(--space-lg);
+  margin-top: var(--space-sm);
 }
 
 .list-header {
@@ -150,101 +112,52 @@
   border-radius: var(--radius-full);
 }
 
-/* ── 包裹卡片 ── */
+/* ── 包裹卡片（原始左右布局） ── */
 .package-card {
-  padding: 0 !important;
-  overflow: hidden;
-  position: relative;
-  transition: transform .15s, box-shadow .15s;
+  padding: var(--space-md) var(--space-lg) !important;
+  transition: background .15s;
 }
 
-.package-card:active {
-  transform: scale(.985);
-  box-shadow: var(--shadow-md);
-}
+.package-card:active { background: var(--color-bg-hover); }
 
-.package-accent {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 8rpx;
-  background: linear-gradient(180deg, var(--color-brand) 0%, #06ad56 100%);
-  border-radius: var(--radius-md) 0 0 var(--radius-md);
-}
-
-.package-body {
-  padding: var(--space-md) var(--space-lg) var(--space-md) calc(var(--space-lg) + 8rpx);
-}
-
-.package-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: var(--space-sm);
-}
-
-.package-code-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-}
-
-.package-code-label {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-.package-code {
-  font-size: 56rpx;
-  font-weight: 800;
-  color: var(--color-text);
-  font-family: "DIN Alternate", "Helvetica Neue", monospace;
-  letter-spacing: 4rpx;
-  line-height: 1;
-}
-
-.package-badge {
+.package-main {
   display: flex;
   align-items: center;
-  gap: 6rpx;
-  padding: 6rpx 16rpx;
-  background: rgba(7, 193, 96, .08);
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  color: var(--color-brand);
-  font-weight: 500;
+  justify-content: space-between;
+  gap: var(--space-md);
 }
 
-.badge-dot {
-  width: 10rpx;
-  height: 10rpx;
-  border-radius: 50%;
-  background: var(--color-brand);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .4; }
-}
-
-.package-bottom {
-  padding-top: var(--space-sm);
-  border-top: 2rpx solid var(--color-separator);
+.package-left {
+  flex: 1;
+  min-width: 0;
 }
 
 .package-waybill {
-  font-size: var(--text-sm);
-  font-weight: 500;
+  font-size: var(--text-base);
+  font-weight: 600;
   color: var(--color-text);
-  margin-bottom: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 6rpx;
 }
 
-.package-info {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+.package-info { font-size: var(--text-sm); }
+
+.package-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.package-code {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: var(--color-danger);
+  font-family: "DIN Alternate", "Helvetica Neue", monospace;
+  letter-spacing: 2rpx;
+  line-height: 1;
 }
 
 .list-hint {

@@ -1,14 +1,6 @@
 <!-- 首页：查件 -->
 <view class="page">
 
-  <!-- 顶部品牌区 -->
-  <view class="hero">
-    <view class="hero-inner">
-      <view class="hero-title">📦 快递取件</view>
-      <view class="hero-desc">绑定号码，包裹到站自动提醒</view>
-    </view>
-  </view>
-
   <!-- 搜索 -->
   <view class="search-wrap">
     <view class="input-wrap {{searchFocus ? 'input-wrap-focus' : ''}}">
@@ -88,24 +80,16 @@
     <view class="card package-card" wx:for="{{packages}}" wx:key="waybill_code"
       data-code="{{item.pickup_code}}" data-waybill="{{item.waybill_code}}"
       bindtap="onCopyCode" bindlongpress="onCopyWaybill">
-      <view class="package-accent"></view>
-      <view class="package-body">
-        <view class="package-top">
-          <view class="package-code-wrap">
-            <view class="package-code-label">取件码</view>
-            <view class="package-code">{{item.pickup_code || '—'}}</view>
-          </view>
-          <view class="package-badge" wx:if="{{item.pickup_code}}">
-            <text class="badge-dot"></text>
-            <text>待取</text>
-          </view>
-        </view>
-        <view class="package-bottom">
+      <view class="package-main">
+        <view class="package-left">
           <view class="package-waybill">{{item.waybill_code}}</view>
-          <view class="package-info">
-            <text wx:if="{{item.customer_name}}">{{item.customer_name}}</text>
+          <view class="package-info text-secondary">
+            {{item.customer_name || ''}}
             <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
           </view>
+        </view>
+        <view class="package-right" wx:if="{{item.pickup_code}}">
+          <view class="package-code">{{item.pickup_code}}</view>
         </view>
       </view>
     </view>
