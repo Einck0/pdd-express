@@ -18,6 +18,17 @@ jobs:
 
       - run: npm install miniprogram-ci
 
+      - name: Inject runtime config
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        run: |
+          cat > miniProgram/config/config.user.js << EOF
+          module.exports = {
+            apiBaseUrl: '${API_BASE_URL:-https://example.com/express}'
+          };
+          EOF
+          echo "config.user.js created"
+
       - name: Write upload key
         env:
           WX_UPLOAD_KEY: ${{ secrets.WX_UPLOAD_KEY }}
@@ -44,4 +55,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: rm -f /tmp/upload.key
+        run: rm -f /tmp/upload.key /tmp/config.user.js

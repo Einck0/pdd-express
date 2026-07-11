@@ -4,7 +4,7 @@
  */
 
 var defaults = {
-  // 后端 API 地址
+  // 后端 API 地址（CI 构建时通过 config.user.js 注入，本地勿提交）
   apiBaseUrl: 'https://example.com/express',
 
   // 轮播公告
