@@ -46,10 +46,11 @@ App({
           return;
         }
         api.wxLogin(res.code).then(function (data) {
-          if (data && data.token) {
-            that.globalData.wxid = data.token;
-            try { wx.setStorageSync('wxid', data.token); } catch (e) {}
-            that.globalData.loginCallbacks.forEach(function (cb) { cb(data.token); });
+          var wxid = data.token || data.wxid || data.openid || '';
+          if (wxid) {
+            that.globalData.wxid = wxid;
+            try { wx.setStorageSync('wxid', wxid); } catch (e) {}
+            that.globalData.loginCallbacks.forEach(function (cb) { cb(wxid); });
             that.globalData.loginCallbacks = [];
           } else {
             that._retry(attempt, 'token 为空');
