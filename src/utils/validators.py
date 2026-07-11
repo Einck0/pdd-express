@@ -7,8 +7,10 @@ import re
 
 
 def validate_phone(phone: str) -> bool:
-    """校验手机号格式（1开头的11位数字）"""
-    if not phone or not re.match(r'^1\d{10}$', phone):
+    """校验号码格式（至少5位，支持字母数字下划线中划线）"""
+    if not phone or len(phone) < 5:
+        return False
+    if not re.match(r'^[a-zA-Z0-9_-]+$', phone):
         return False
     return True
 
