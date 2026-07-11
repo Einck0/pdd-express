@@ -65,18 +65,19 @@
     <view class="card package-card" wx:for="{{packages}}" wx:key="waybill_code"
       data-code="{{item.pickup_code}}" data-waybill="{{item.waybill_code}}"
       bindtap="onCopyCode" bindlongpress="onCopyWaybill">
-      <view class="package-top">
-        <view class="package-waybill">{{item.waybill_code}}</view>
-        <view class="package-badge" wx:if="{{item.pickup_code}}">待取</view>
-      </view>
-      <view class="package-bottom">
-        <view class="package-info text-secondary">
-          {{item.customer_name || ''}}
-          <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
+      <view class="package-main">
+        <view class="package-left">
+          <view class="package-waybill">{{item.waybill_code}}</view>
+          <view class="package-info text-secondary">
+            {{item.customer_name || ''}}
+            <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
+          </view>
         </view>
-        <view class="package-code" wx:if="{{item.pickup_code}}" style="font-size:48rpx;">{{item.pickup_code}}</view>
+        <view class="package-right" wx:if="{{item.pickup_code}}">
+          <view class="package-badge">待取</view>
+          <view class="package-code">{{item.pickup_code}}</view>
+        </view>
       </view>
-      <view class="package-hint text-muted">点击取件码可复制 · 长按复制单号</view>
     </view>
   </view>
 
