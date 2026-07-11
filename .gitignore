@@ -8,6 +8,10 @@ logs/
 pdd.db
 src/pdd.db
 
+# 经验文件（本地维护，不提交）
+.exp.md
+.service-exp/
+
 # Windows
 [Dd]esktop.ini
 Thumbs.db
