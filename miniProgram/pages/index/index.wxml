@@ -12,7 +12,7 @@
     <view class="input-wrap {{searchFocus ? 'input-wrap-focus' : ''}}">
       <input
         class="input"
-        placeholder="输入运单号或手机号查询"
+        placeholder="运单号后5位 / 全部单号"
         value="{{keyword}}"
         bindinput="onInput"
         bindfocus="searchFocus = true"
@@ -74,7 +74,7 @@
           {{item.customer_name || ''}}
           <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
         </view>
-        <view class="package-code" wx:if="{{item.pickup_code}}">{{item.pickup_code}}</view>
+        <view class="package-code" wx:if="{{item.pickup_code}}" style="font-size:48rpx;">{{item.pickup_code}}</view>
       </view>
       <view class="package-hint text-muted">点击取件码可复制 · 长按复制单号</view>
     </view>

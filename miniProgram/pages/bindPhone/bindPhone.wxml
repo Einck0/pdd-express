@@ -1,7 +1,4 @@
 <!-- 手机号管理页 -->
-<import src="./agreement.wxml" />
-<import src="./privacy.wxml" />
-
 <view class="page">
 
   <!-- 输入区 -->
@@ -11,7 +8,7 @@
         class="input"
         type="number"
         maxlength="11"
-        placeholder="输入手机号"
+        placeholder="输入凭证"
         value="{{phone}}"
         bindinput="onPhoneInput"
         bindfocus="onInputFocus"
@@ -20,37 +17,15 @@
       <view class="input-clear" wx:if="{{phone}}" bindtap="onPhoneClear">✕</view>
     </view>
 
-    <view class="agree-row">
-      <view class="checkbox {{agreed ? 'checkbox-checked' : ''}}" bindtap="onAgreeToggle">
-        <text wx:if="{{agreed}}">✓</text>
-      </view>
-      <text class="agree-text">我已阅读并同意</text>
-      <text class="agree-link" bindtap="onToggleAgreement">《用户协议》</text>
-      <text class="agree-link" bindtap="onTogglePrivacy">《隐私政策》</text>
-    </view>
-
     <button
       class="btn btn-brand {{adding ? 'btn-loading' : ''}}"
-      disabled="{{!agreed || adding}}"
+      disabled="{{adding}}"
       bindtap="onAdd"
-    >{{adding ? '添加中…' : '添加手机号'}}</button>
-  </view>
-
-  <!-- 协议展开 -->
-  <view class="card agreement-card" wx:if="{{showAgreement}}">
-    <scroll-view scroll-y style="max-height:500rpx;">
-      <template is="agreement" />
-    </scroll-view>
-  </view>
-
-  <view class="card agreement-card" wx:if="{{showPrivacy}}">
-    <scroll-view scroll-y style="max-height:500rpx;">
-      <template is="privacy" />
-    </scroll-view>
+    >{{adding ? '添加中…' : '添加'}}</button>
   </view>
 
   <!-- 手机号列表 -->
-  <view class="section-title text-secondary" wx:if="{{!loading && phones.length > 0}}">已绑定手机号</view>
+  <view class="section-title text-secondary" wx:if="{{!loading && phones.length > 0}}">已绑定号码</view>
 
   <block wx:if="{{loading}}">
     <view class="card" wx:for="{{[1,2]}}" wx:key="*this" style="padding:32rpx;">
@@ -60,8 +35,8 @@
 
   <view wx:elif="{{phones.length === 0}}" class="empty">
     <view class="empty-icon">📱</view>
-    <view class="empty-title">还没有绑定手机号</view>
-    <view class="empty-desc">添加手机号后自动为你查件</view>
+    <view class="empty-title">还没有绑定号码</view>
+    <view class="empty-desc">添加后自动为你查件</view>
   </view>
 
   <block wx:else>

@@ -1,7 +1,6 @@
 /**
  * 手机号管理页
- * 功能：添加/删除手机号，用户协议，隐私政策
- * 删除方式：点击删除按钮弹出确认框
+ * 功能：添加/删除手机号
  */
 
 var app = getApp();
@@ -13,9 +12,6 @@ Page({
     phones: [],
     loading: true,
     adding: false,
-    agreed: false,
-    showAgreement: false,
-    showPrivacy: false,
   },
 
   onShow: function () {
@@ -52,10 +48,6 @@ Page({
     this.setData({ phone: '' });
   },
 
-  onAgreeToggle: function () {
-    this.setData({ agreed: !this.data.agreed });
-  },
-
   /* ── 添加 ── */
 
   onAdd: function () {
@@ -64,10 +56,6 @@ Page({
 
     if (!/^1\d{10}$/.test(phone)) {
       wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
-      return;
-    }
-    if (!this.data.agreed) {
-      wx.showToast({ title: '请先同意用户协议', icon: 'none' });
       return;
     }
 
@@ -103,15 +91,5 @@ Page({
         });
       },
     });
-  },
-
-  /* ── 协议 ── */
-
-  onToggleAgreement: function () {
-    this.setData({ showAgreement: !this.data.showAgreement, showPrivacy: false });
-  },
-
-  onTogglePrivacy: function () {
-    this.setData({ showPrivacy: !this.data.showPrivacy, showAgreement: false });
   },
 });

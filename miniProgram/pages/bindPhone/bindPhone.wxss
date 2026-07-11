@@ -6,48 +6,6 @@
   box-sizing: border-box;
 }
 
-/* ── 协议勾选 ── */
-.agree-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  margin: var(--space-md) 0;
-  font-size: var(--text-sm);
-  flex-wrap: wrap;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36rpx;
-  height: 36rpx;
-  border: 3rpx solid var(--color-separator);
-  border-radius: 6rpx;
-  font-size: var(--text-xs);
-  color: #fff;
-  transition: all .15s;
-  flex-shrink: 0;
-}
-
-.checkbox-checked {
-  background: var(--color-brand);
-  border-color: var(--color-brand);
-}
-
-.agree-text { color: var(--color-text-muted); }
-
-.agree-link {
-  color: var(--color-link);
-}
-
-/* ── 协议内容 ── */
-.agreement-card {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  line-height: 1.8;
-}
-
 /* ── 区块标题 ── */
 .section-title {
   font-size: var(--text-sm);
