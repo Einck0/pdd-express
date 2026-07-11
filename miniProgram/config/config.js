@@ -1,25 +1,42 @@
-// config/config.js - 主配置（会被 config.user.js 覆盖）
-const config = {
-  apiBaseUrl: 'https://api.example.com/express',
+/**
+ * 主配置文件
+ * 所有默认配置项在此定义
+ * config.user.js 可覆盖任意字段
+ */
+var config = {
+  // API 基础地址（无尾部斜杠）
+  apiBaseUrl: 'https://your-domain.com',
+
+  // 轮播公告内容
   bannerTexts: [
-    '收藏小程序，无需扫码即可查件',
-    '取件时务必核对姓名',
-    '最多添加5个手机号',
+    '欢迎使用快递取件助手',
+    '请妥善保管取件码',
+    '如有问题请联系客服'
   ],
-  bannerInterval: 5000,
+
+  // 轮播间隔（ms）
+  bannerInterval: 3000,
+
+  // wx.login 最大重试次数
   loginMaxRetries: 3,
-  loginRetryDelay: 3000,
-  searchMinLength: 11,
+
+  // wx.login 重试间隔（ms）
+  loginRetryDelay: 1000,
+
+  // 请求超时（ms）
+  requestTimeout: 15000
 };
 
 // 尝试加载本地覆盖配置
 try {
-  const local = require('./config.user.js');
-  if (local) {
-    Object.assign(config, local);
+  var localConfig = require('./config.user');
+  if (localConfig) {
+    Object.keys(localConfig).forEach(function (key) {
+      config[key] = localConfig[key];
+    });
   }
 } catch (e) {
-  // 本地配置不存在，使用默认值
+  // config.user.js 不存在或加载失败，忽略
 }
 
 module.exports = config;

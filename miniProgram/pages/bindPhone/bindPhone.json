@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "agreement": "./agreement.wxml",
+    "privacy": "./privacy.wxml"
+  }
 }

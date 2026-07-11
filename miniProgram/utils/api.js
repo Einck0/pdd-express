@@ -1,95 +1,106 @@
-// utils/api.js - 统一 API 请求封装
-const config = require('../config/config');
+/**
+ * API 封装层
+ * 统一管理所有后端接口调用
+ */
+var config = require('../config/config');
 
-let loadingCount = 0;
-
-function showLoading() {
-  if (loadingCount === 0) {
-    wx.showLoading({ title: '加载中...', mask: false });
-  }
-  loadingCount++;
-}
-
-function hideLoading() {
-  loadingCount--;
-  if (loadingCount <= 0) {
-    loadingCount = 0;
-    wx.hideLoading();
-  }
-}
+var BASE_URL = config.apiBaseUrl;
 
 /**
- * 统一请求方法
+ * 通用请求方法
+ * @param {string} url - 请求路径（不含 base）
  * @param {string} method - HTTP 方法
- * @param {string} path - API 路径（不含 base）
- * @param {object} data - 请求体
- * @param {object} opts - 额外选项
- * @param {boolean} opts.showLoading - 是否显示 loading（默认 true）
- * @param {boolean} opts.showError - 是否自动 toast 错误（默认 true）
- * @returns {Promise<object>} - 响应数据（已解包 res.data）
+ * @param {Object} data - 请求体
+ * @param {Function} resolve - 成功回调
+ * @param {Function} reject - 失败回调
  */
-function request(method, path, data = {}, opts = {}) {
-  const { showLoading: showLd = true, showError = true } = opts;
-
-  if (showLd) showLoading();
-
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url: config.apiBaseUrl + path,
-      method: method.toUpperCase(),
-      data,
-      header: { 'content-type': 'application/json' },
-      success(res) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data);
-        } else {
-          const msg = (res.data && res.data.message) || `请求失败 (${res.statusCode})`;
-          if (showError) {
-            wx.showToast({ title: msg, icon: 'none', duration: 2000 });
-          }
-          reject({ statusCode: res.statusCode, data: res.data, message: msg });
-        }
-      },
-      fail(err) {
-        const msg = '网络错误，请检查网络连接';
-        if (showError) {
-          wx.showToast({ title: msg, icon: 'none', duration: 2000 });
-        }
-        reject({ message: msg, error: err });
-      },
-      complete() {
-        if (showLd) hideLoading();
-      },
-    });
+function request(url, method, data, resolve, reject) {
+  wx.request({
+    url: BASE_URL + url,
+    method: method,
+    data: data || {},
+    header: { 'Content-Type': 'application/json' },
+    timeout: config.requestTimeout,
+    success: function (res) {
+      if (res.statusCode === 200) {
+        resolve(res.data);
+      } else {
+        var errMsg = (res.data && res.data.message) || '请求失败 (' + res.statusCode + ')';
+        wx.showToast({ title: errMsg, icon: 'none', duration: 2000 });
+        reject(errMsg);
+      }
+    },
+    fail: function (err) {
+      wx.showToast({ title: '网络错误，请重试', icon: 'none', duration: 2000 });
+      reject(err);
+    }
   });
 }
 
-// ---- 业务 API ----
+/**
+ * POST /express/wxlogin
+ * @param {string} code - wx.login 获取的 code
+ */
+function wxLogin(code, resolve, reject) {
+  request('/express/wxlogin', 'POST', { code: code }, resolve, reject);
+}
 
-const wxLogin = (code) =>
-  request('POST', '/wxlogin', { code }, { showLoading: false });
+/**
+ * GET /express/phones/{wxid}
+ */
+function getPhones(wxid, resolve, reject) {
+  request('/express/phones/' + wxid, 'GET', null, resolve, reject);
+}
 
-const getPhones = (wxid) =>
-  request('GET', `/phones/${wxid}`);
+/**
+ * POST /express/phones/{wxid}
+ * @param {string} wxid
+ * @param {string} phone
+ */
+function addPhone(wxid, phone, resolve, reject) {
+  request('/express/phones/' + wxid, 'POST', { phone: phone }, resolve, reject);
+}
 
-const addPhone = (wxid, phone) =>
-  request('POST', `/phones/${wxid}`, { phone });
+/**
+ * DELETE /express/phones/{wxid}
+ * @param {string} wxid
+ * @param {string} phone
+ */
+function deletePhone(wxid, phone, resolve, reject) {
+  request('/express/phones/' + wxid, 'DELETE', { phone: phone }, resolve, reject);
+}
 
-const deletePhone = (wxid, phone) =>
-  request('DELETE', `/phones/${wxid}`, { phone });
+/**
+ * GET /express/package/{wxid}
+ */
+function getPackages(wxid, resolve, reject) {
+  request('/express/package/' + wxid, 'GET', null, resolve, reject);
+}
 
-const getPackages = (wxid) =>
-  request('GET', `/package/${wxid}`);
+/**
+ * POST /express/package/{wxid}
+ * @param {string} wxid
+ * @param {string} keyword
+ */
+function searchPackages(wxid, keyword, resolve, reject) {
+  request('/express/package/' + wxid, 'POST', { keyword: keyword }, resolve, reject);
+}
 
-const searchPackage = (wxid, keyword) =>
-  request('POST', `/package/${wxid}`, { keyword });
+/**
+ * POST /express/package/ （兜底搜索）
+ * @param {string} wxid
+ * @param {string} keyword
+ */
+function searchPackagesFallback(wxid, keyword, resolve, reject) {
+  request('/express/package/', 'POST', { wxid: wxid, keyword: keyword }, resolve, reject);
+}
 
 module.exports = {
-  request,
-  wxLogin,
-  getPhones,
-  addPhone,
-  deletePhone,
-  getPackages,
-  searchPackage,
+  wxLogin: wxLogin,
+  getPhones: getPhones,
+  addPhone: addPhone,
+  deletePhone: deletePhone,
+  getPackages: getPackages,
+  searchPackages: searchPackages,
+  searchPackagesFallback: searchPackagesFallback
 };

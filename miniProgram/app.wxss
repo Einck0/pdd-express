@@ -1,109 +1,149 @@
-/* ============================
-   全局样式 - 快递查询小程序
-   主色: #4F7CFF  成功: #07C160  危险: #FA5151
-   ============================ */
+/**
+ * 全局样式
+ * 色彩系统、通用类、工具类
+ */
 
+/* ========== CSS 变量 ========== */
 page {
-  --primary: #4F7CFF;
-  --primary-light: #EDF2FF;
-  --success: #07C160;
-  --danger: #FA5151;
-  --text: #333;
-  --text-secondary: #999;
-  --bg: #F6F7FB;
-  --card-bg: #fff;
-  --border: #EBEDF0;
-  --radius: 16rpx;
-  --shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  --color-primary: #4F7CFF;
+  --color-primary-light: rgba(79, 124, 255, 0.1);
+  --color-success: #07C160;
+  --color-danger: #FA5151;
+  --color-bg: #F6F7FB;
+  --color-card: #FFFFFF;
+  --color-text: #333333;
+  --color-text-secondary: #999999;
+  --color-border: #E8E8E8;
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  --radius-card: 16rpx;
+  --radius-btn: 8rpx;
+  --font-title: 36rpx;
+  --font-body: 28rpx;
+  --font-caption: 24rpx;
+  --font-pickup: 64rpx;
 
-  background-color: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  font-size: 28rpx;
-  color: var(--text);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--font-body);
   line-height: 1.6;
+  box-sizing: border-box;
 }
+
+/* ========== 通用工具类 ========== */
+
+/* 弹性布局 */
+.flex-row { display: flex; flex-direction: row; align-items: center; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-1 { flex: 1; }
+
+/* 间距 */
+.p-8 { padding: 8rpx; }
+.p-16 { padding: 16rpx; }
+.p-24 { padding: 24rpx; }
+.p-32 { padding: 32rpx; }
+.p-48 { padding: 48rpx; }
+.mt-16 { margin-top: 16rpx; }
+.mt-24 { margin-top: 24rpx; }
+.mt-32 { margin-top: 32rpx; }
+.mb-16 { margin-bottom: 16rpx; }
+.mb-24 { margin-bottom: 24rpx; }
+
+/* 文字 */
+.text-title { font-size: var(--font-title); font-weight: 600; }
+.text-body { font-size: var(--font-body); }
+.text-caption { font-size: var(--font-caption); color: var(--color-text-secondary); }
+.text-center { text-align: center; }
+.text-primary { color: var(--color-primary); }
+.text-danger { color: var(--color-danger); }
 
 /* 卡片 */
 .card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 32rpx;
-  margin: 24rpx 0;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24rpx;
+  margin-bottom: 16rpx;
 }
 
-/* 主按钮 */
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
+/* 按钮 */
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 88rpx;
+  min-height: 88rpx;
+  border-radius: var(--radius-btn);
+  font-size: var(--font-body);
+  font-weight: 500;
   border: none;
-  border-radius: 40rpx;
-  font-size: 30rpx;
-  padding: 22rpx 0;
-  text-align: center;
-  width: 100%;
-  line-height: 1.5;
-  box-sizing: border-box;
+  padding: 0 32rpx;
+}
+
+.btn::after { border: none; }
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
 }
 
 .btn-primary[disabled] {
-  opacity: 0.5;
+  background: rgba(79, 124, 255, 0.4);
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.btn-primary::after {
-  border: none;
-}
-
-/* 危险按钮 */
 .btn-danger {
-  background: var(--danger);
-  color: #fff;
-  border: none;
-  border-radius: 40rpx;
-  font-size: 26rpx;
-  padding: 14rpx 32rpx;
-  line-height: 1.5;
+  background: var(--color-danger);
+  color: #FFFFFF;
 }
 
-.btn-danger::after {
-  border: none;
+.btn-ghost {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
 }
 
-/* 搜索框 */
-.search-wrap {
+.btn-sm {
+  height: 64rpx;
+  min-height: 64rpx;
+  font-size: var(--font-caption);
+  padding: 0 24rpx;
+}
+
+/* 输入框 */
+.input-wrap {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin: 24rpx 0;
+  height: 88rpx;
+  background: #FFFFFF;
+  border: 2rpx solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 0 24rpx;
 }
 
-.search-input {
+.input-wrap input {
   flex: 1;
-  background: var(--card-bg);
-  border-radius: 40rpx;
-  padding: 20rpx 32rpx;
-  font-size: 28rpx;
-  box-shadow: var(--shadow);
-  height: 80rpx;
-  box-sizing: border-box;
+  height: 100%;
+  font-size: var(--font-body);
 }
 
-.btn-search {
-  flex-shrink: 0;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 40rpx;
-  font-size: 28rpx;
-  padding: 0 40rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  box-sizing: border-box;
+.input-wrap-focus {
+  border-color: var(--color-primary);
 }
 
-.btn-search::after {
-  border: none;
+/* 骨架屏 */
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background: #EEEEEE;
+  border-radius: 8rpx;
 }
 
 /* 空状态 */
@@ -112,59 +152,21 @@ page {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 0;
-  color: var(--text-secondary);
+  padding: 120rpx 48rpx;
 }
 
 .empty-state .empty-icon {
-  font-size: 80rpx;
+  width: 160rpx;
+  height: 160rpx;
   margin-bottom: 24rpx;
 }
 
 .empty-state .empty-text {
-  font-size: 28rpx;
+  font-size: var(--font-body);
+  color: var(--color-text-secondary);
 }
 
-/* 骨架屏 */
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-  background-size: 400% 100%;
-  animation: skeleton-loading 1.4s ease infinite;
-  border-radius: 8rpx;
-}
-
-@keyframes skeleton-loading {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
-}
-
-.skeleton-card {
-  height: 180rpx;
-  margin: 24rpx 0;
-  border-radius: var(--radius);
-}
-
-/* 协议链接 */
-.agreement-link {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-/* 协议内容区 */
-.agreement-scroll {
-  height: 400rpx;
-  background: #fafafa;
-  border-radius: var(--radius);
-  padding: 24rpx;
-  margin: 16rpx 0;
-  font-size: 24rpx;
-  line-height: 2;
-}
-
-.agreement-scroll .yhxy {
-  display: block;
-  text-align: center;
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 24rpx;
+/* 安全区域 */
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 16rpx);
 }

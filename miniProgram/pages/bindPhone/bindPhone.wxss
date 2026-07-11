@@ -1,76 +1,130 @@
-/* pages/bindPhone/bindPhone.wxss */
-.page-bind {
+/**
+ * 手机号管理页样式
+ */
+
+.page-container {
   padding: 24rpx;
-  min-height: 100vh;
-  box-sizing: border-box;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
 }
 
-/* ---- 添加卡片 ---- */
-.add-card {
-  margin-bottom: 32rpx;
+/* ========== 输入区 ========== */
+.input-section {
+  padding: 32rpx;
 }
 
-.add-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  margin-bottom: 20rpx;
+.input-label {
+  font-weight: 500;
 }
 
-.phone-input {
-  background: var(--bg);
-  border-radius: 40rpx;
-  padding: 20rpx 32rpx;
-  font-size: 30rpx;
-  margin-bottom: 20rpx;
-  height: 80rpx;
-  box-sizing: border-box;
-}
-
-/* ---- 协议 ---- */
+/* ========== 协议勾选 ========== */
 .agree-row {
+  align-items: center;
+}
+
+.checkbox-wrap {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid var(--color-border);
+  border-radius: 6rpx;
   display: flex;
-  align-items: flex-start;
-  gap: 8rpx;
-  margin-bottom: 20rpx;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12rpx;
+  flex-shrink: 0;
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #FFFFFF;
+  transition: all 0.2s;
+}
+
+.checkbox-wrap.checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .agree-text {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* ---- 列表 ---- */
-.list-section {
+.link-text {
+  color: var(--color-primary);
+}
+
+/* ========== 添加按钮 ========== */
+.input-section .btn {
+  width: 100%;
+}
+
+/* ========== 协议展开 ========== */
+.agreement-card {
   margin-top: 16rpx;
 }
 
-.list-title {
-  font-size: 28rpx;
-  font-weight: 600;
+.agreement-header {
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid var(--color-border);
   margin-bottom: 16rpx;
-  color: var(--text-secondary);
+}
+
+.close-btn {
+  font-size: 32rpx;
+  color: var(--color-text-secondary);
+  padding: 8rpx;
+}
+
+.agreement-content {
+  max-height: 600rpx;
+  overflow-y: auto;
+  font-size: var(--font-caption);
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.agreement-content view {
+  margin-bottom: 16rpx;
+}
+
+.yhxy {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--color-text);
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.myOne {
+  padding: 8rpx;
+}
+
+.my-div view {
+  margin-bottom: 12rpx;
+}
+
+/* ========== 列表标题 ========== */
+.section-title {
+  padding: 0 8rpx;
+}
+
+/* ========== 手机号卡片 ========== */
+.phone-list {
+  margin-top: 8rpx;
 }
 
 .phone-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 28rpx 32rpx;
-  margin-bottom: 16rpx;
+  padding: 24rpx 32rpx;
 }
 
-.phone-num {
-  font-size: 34rpx;
+.phone-number {
+  font-size: 32rpx;
   font-weight: 500;
   letter-spacing: 2rpx;
 }
 
-.skeleton-phone {
-  height: 88rpx;
-  margin-bottom: 16rpx;
-  border-radius: var(--radius);
+.delete-btn {
+  flex-shrink: 0;
+  width: 120rpx;
+}
+
+/* ========== 骨架屏 ========== */
+.skeleton-list {
+  margin-top: 8rpx;
 }

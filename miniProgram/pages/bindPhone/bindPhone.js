@@ -1,102 +1,159 @@
-// pages/bindPhone/bindPhone.js
-const app = getApp();
+/**
+ * 手机号管理页逻辑
+ * 功能：添加/删除手机号、协议同意、列表展示
+ */
+var api = require('../../utils/api');
 
 Page({
   data: {
+    // 输入
     phoneInput: '',
-    phoneNumbers: [],
-    agreeTerms: false,
-    showAgreement: false,
-    showPrivacy: false,
+    agreeChecked: false,
+
+    // 手机号列表
+    phones: [],
+
+    // 状态
     loading: true,
+    adding: false,
+    wxid: '',
+
+    // 协议展开
+    showAgreement: false,
+    showPrivacy: false
   },
 
-  onShow() {
-    this._loadPhones();
-  },
-
-  async _loadPhones() {
-    if (!app.globalData.wxid) {
-      try { await app.ensureLogin(); } catch (e) { return; }
+  onLoad: function () {
+    var that = this;
+    var app = getApp();
+    if (app.globalData.openid) {
+      that.setData({ wxid: app.globalData.openid });
+      that.loadPhones();
+    } else {
+      app.loginCallback = function (openid) {
+        that.setData({ wxid: openid });
+        that.loadPhones();
+      };
     }
-    this.setData({ loading: true });
-    try {
-      const res = await app.api.getPhones(app.globalData.wxid);
-      this.setData({ phoneNumbers: res.phones || [] });
-    } catch (e) {
-      // api 已自动 toast
-    } finally {
-      this.setData({ loading: false });
+  },
+
+  onShow: function () {
+    if (this.data.wxid && !this.data.loading) {
+      this.loadPhones();
     }
   },
 
-  onPhoneInput(e) {
+  /**
+   * 加载手机号列表
+   */
+  loadPhones: function () {
+    var that = this;
+    if (!that.data.wxid) {
+      that.setData({ loading: false });
+      return;
+    }
+    that.setData({ loading: true });
+
+    api.getPhones(that.data.wxid, function (data) {
+      that.setData({
+        phones: data.phones || [],
+        loading: false
+      });
+    }, function () {
+      that.setData({ loading: false });
+      wx.showToast({ title: '加载手机号失败', icon: 'none' });
+    });
+  },
+
+  /**
+   * 输入手机号
+   */
+  onPhoneInput: function (e) {
     this.setData({ phoneInput: e.detail.value });
   },
 
-  onAgreeChange(e) {
-    this.setData({ agreeTerms: e.detail.value.length > 0 });
+  /**
+   * 勾选协议
+   */
+  onAgreeChange: function (e) {
+    this.setData({ agreeChecked: !this.data.agreeChecked });
   },
 
-  async onAdd() {
-    const phone = this.data.phoneInput.trim();
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的11位手机号', icon: 'none' });
+  /**
+   * 添加手机号
+   */
+  onAddPhone: function () {
+    var that = this;
+    var phone = that.data.phoneInput.trim();
+
+    if (!phone) {
+      wx.showToast({ title: '请输入手机号', icon: 'none' });
       return;
     }
-    if (!this.data.agreeTerms) {
+    // 简单校验 11 位数字
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
+      return;
+    }
+    if (!that.data.agreeChecked) {
       wx.showToast({ title: '请先同意用户协议', icon: 'none' });
       return;
     }
-
-    const res = await new Promise((resolve) => {
-      wx.showModal({
-        title: '确认添加',
-        content: `添加手机号 ${phone} ？`,
-        success: resolve,
-      });
-    });
-    if (!res.confirm) return;
-
-    try {
-      await app.api.addPhone(app.globalData.wxid, phone);
-      wx.showToast({ title: '添加成功', icon: 'success' });
-      this.setData({ phoneInput: '' });
-      this._loadPhones();
-    } catch (e) {
-      // api 已自动 toast
+    if (!that.data.wxid) {
+      wx.showToast({ title: '未登录', icon: 'none' });
+      return;
     }
+
+    that.setData({ adding: true });
+
+    api.addPhone(that.data.wxid, phone, function () {
+      that.setData({
+        phoneInput: '',
+        adding: false
+      });
+      wx.showToast({ title: '添加成功', icon: 'success' });
+      that.loadPhones();
+    }, function () {
+      that.setData({ adding: false });
+    });
   },
 
-  onDelete(e) {
-    const phone = e.currentTarget.dataset.phone;
+  /**
+   * 删除手机号（带确认弹窗）
+   */
+  onDeletePhone: function (e) {
+    var that = this;
+    var phone = e.currentTarget.dataset.phone;
+
     wx.showModal({
       title: '确认删除',
-      content: `删除手机号 ${phone} ？`,
-      success: async (res) => {
-        if (!res.confirm) return;
-        try {
-          await app.api.deletePhone(app.globalData.wxid, phone);
-          wx.showToast({ title: '删除成功', icon: 'success' });
-          this._loadPhones();
-        } catch (e) {
-          // api 已自动 toast
+      content: '确定删除手机号 ' + phone + ' ？',
+      confirmText: '删除',
+      confirmColor: '#FA5151',
+      success: function (res) {
+        if (res.confirm) {
+          api.deletePhone(that.data.wxid, phone, function () {
+            wx.showToast({ title: '已删除', icon: 'success' });
+            that.loadPhones();
+          }, function () {
+            // 错误 toast 已在 api 层处理
+          });
         }
-      },
+      }
     });
   },
 
-  toggleAgreement() {
-    this.setData({
-      showAgreement: !this.data.showAgreement,
-      showPrivacy: false,
-    });
+  /**
+   * 展开/收起用户协议
+   */
+  toggleAgreement: function () {
+    this.setData({ showAgreement: !this.data.showAgreement });
   },
 
-  togglePrivacy() {
-    this.setData({
-      showPrivacy: !this.data.showPrivacy,
-      showAgreement: false,
-    });
-  },
+  /**
+   * 展开/收起隐私协议
+   */
+  togglePrivacy: function () {
+    this.setData({ showPrivacy: !this.data.showPrivacy });
+  }
 });

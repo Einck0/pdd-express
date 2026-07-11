@@ -1,65 +1,99 @@
-<!-- pages/index/index.wxml -->
-<view class="page-index">
+<!--
+  首页模板
+  结构：轮播公告 → 搜索框 → 操作栏 → 包裹列表/骨架屏/空状态
+-->
+<view class="page-container">
 
-  <!-- 顶部轮播公告 -->
-  <view class="banner-bar">
-    <swiper class="banner-swiper" autoplay circular interval="{{3000}}" vertical display-multiple-items="1">
+  <!-- 轮播公告 -->
+  <view class="banner-wrap" wx:if="{{bannerTexts.length > 0}}">
+    <swiper
+      class="banner-swiper"
+      vertical
+      autoplay
+      circular
+      interval="{{bannerInterval}}"
+      duration="500"
+    >
       <swiper-item wx:for="{{bannerTexts}}" wx:key="*this">
-        <view class="banner-text">{{item}}</view>
+        <view class="banner-text">📢 {{item}}</view>
       </swiper-item>
     </swiper>
   </view>
 
-  <!-- 搜索区 -->
-  <view class="search-wrap">
-    <input
-      class="search-input"
-      placeholder="输入单号或手机号查件"
-      value="{{searchInput}}"
-      bindinput="onSearchInput"
-      confirm-type="search"
-      bindconfirm="onSearch"
-    />
-    <button class="btn-search" bindtap="onSearch">查件</button>
+  <!-- 搜索栏 -->
+  <view class="search-bar card">
+    <view class="search-input-wrap flex-row">
+      <input
+        class="search-input"
+        placeholder="搜索运单号/姓名/手机号"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        confirm-type="search"
+        bindconfirm="onSearch"
+      />
+      <view class="search-btn btn btn-primary btn-sm" bindtap="onSearch">搜索</view>
+    </view>
   </view>
 
-  <!-- 操作按钮 -->
-  <view class="action-bar">
-    <button class="action-btn refresh-btn" bindtap="onRefresh" size="mini">🔄 刷新</button>
-    <button class="action-btn bind-btn" bindtap="onGoToBind" size="mini">📱 管理手机号</button>
+  <!-- 操作栏 -->
+  <view class="action-bar flex-between">
+    <view class="action-item flex-row" bindtap="onRefresh">
+      <text class="action-icon">🔄</text>
+      <text class="action-text">刷新</text>
+    </view>
+    <view class="action-item flex-row" bindtap="goToBindPhone">
+      <text class="action-icon">📱</text>
+      <text class="action-text">管理手机号</text>
+    </view>
   </view>
 
   <!-- 骨架屏加载态 -->
-  <block wx:if="{{loading}}">
-    <view class="skeleton skeleton-card"></view>
-    <view class="skeleton skeleton-card"></view>
-    <view class="skeleton skeleton-card"></view>
-  </block>
-
-  <!-- 包裹列表 -->
-  <block wx:elif="{{packages.length > 0}}">
-    <view class="package-card" wx:for="{{packages}}" wx:key="waybill_code">
-      <view class="package-left">
-        <view class="pkg-code">{{item.waybill_code}}</view>
-        <view class="pkg-info">
-          <text wx:if="{{item.customer_name}}" class="pkg-name">{{item.customer_name}}</text>
-          <text wx:if="{{item.mobile}}" class="pkg-phone">{{item.mobile}}</text>
+  <view wx:if="{{loading}}" class="skeleton-list">
+    <view class="skeleton-card card" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <view class="skeleton flex-between">
+        <view>
+          <view class="skeleton skeleton-line" style="width: 320rpx; height: 32rpx;"></view>
+          <view class="skeleton skeleton-line mt-16" style="width: 200rpx; height: 24rpx;"></view>
         </view>
-      </view>
-      <view class="package-right">
-        <view class="pickup-badge">{{item.pickup_code || '—'}}</view>
-        <view class="pickup-label">取件码</view>
+        <view class="skeleton skeleton-block" style="width: 120rpx; height: 64rpx;"></view>
       </view>
     </view>
-  </block>
+  </view>
+
+  <!-- 错误态 -->
+  <view wx:elif="{{error}}" class="empty-state">
+    <view class="empty-icon" style="font-size: 120rpx;">⚠️</view>
+    <text class="empty-text">{{errorMsg}}</text>
+    <view class="btn btn-ghost btn-sm mt-32" bindtap="onRefresh" style="width: 240rpx;">重新加载</view>
+  </view>
 
   <!-- 空状态 -->
-  <block wx:elif="{{!loading}}">
-    <view class="empty-state">
-      <view class="empty-icon">📦</view>
-      <view class="empty-text" wx:if="{{phoneNumbers.length > 0}}">暂无包裹</view>
-      <view class="empty-text" wx:else>请先到「手机号」页面添加手机号</view>
+  <view wx:elif="{{packages.length === 0}}" class="empty-state">
+    <view class="empty-icon" style="font-size: 120rpx;">📦</view>
+    <text class="empty-text">暂无包裹</text>
+    <text class="text-caption mt-16">请先绑定手机号，快递到达后将自动显示</text>
+  </view>
+
+  <!-- 包裹卡片列表 -->
+  <view wx:else class="package-list">
+    <view class="package-card card" wx:for="{{packages}}" wx:key="waybill_code">
+      <!-- 上方：运单号 + 取件码 -->
+      <view class="package-header flex-between">
+        <view class="package-waybill">
+          <text class="text-caption">运单号</text>
+          <text class="waybill-code">{{item.waybill_code}}</text>
+        </view>
+        <view class="package-pickup" wx:if="{{item.pickup_code}}">
+          <text class="text-caption">取件码</text>
+          <text class="pickup-code text-danger">{{item.pickup_code}}</text>
+        </view>
+      </view>
+      <!-- 下方：姓名 + 手机号 -->
+      <view class="package-info flex-row mt-16">
+        <text class="info-tag" wx:if="{{item.customer_name}}">{{item.customer_name}}</text>
+        <text class="info-tag" wx:if="{{item.mobile}}">{{item.mobile}}</text>
+      </view>
     </view>
-  </block>
+  </view>
 
 </view>
