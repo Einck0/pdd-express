@@ -10,4 +10,5 @@ services:
     volumes:
       - /home/service/pdd-express/pdd.db:/app/pdd.db
       - /home/service/pdd-express/logs:/app/logs
+      - /home/service/pdd-express/.env:/app/.env
     command: sh -c "python src/init_db.py && python src/main.py"
