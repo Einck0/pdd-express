@@ -1,8 +1,9 @@
 <!-- 号码管理页 -->
 <view class="page">
 
-  <!-- 顶部提示 -->
+  <!-- 顶部 -->
   <view class="header">
+    <view class="header-icon">📋</view>
     <view class="header-title">号码管理</view>
     <view class="header-desc">添加号码后自动为你跟踪快递</view>
   </view>
@@ -11,6 +12,7 @@
   <view class="add-section">
     <view class="add-form">
       <view class="input-wrap {{inputFocus ? 'input-wrap-focus' : ''}}" style="flex:1;">
+        <view class="input-prefix">📱</view>
         <input
           class="input"
           placeholder="输入号码"
@@ -25,28 +27,39 @@
         {{adding ? '' : '添加'}}
       </view>
     </view>
-    <view class="add-hint text-muted">支持号码、单号，5位以上</view>
+    <view class="add-hint text-muted">支持号码、单号，5位以上字母数字组合</view>
   </view>
 
   <!-- 号码列表 -->
   <block wx:if="{{loading}}">
-    <view class="skeleton" style="width:100%;height:100rpx;margin-bottom:16rpx;border-radius:16rpx;"></view>
-    <view class="skeleton" style="width:100%;height:100rpx;border-radius:16rpx;"></view>
+    <view class="skeleton" style="width:100%;height:112rpx;margin-bottom:16rpx;border-radius:16rpx;"></view>
+    <view class="skeleton" style="width:100%;height:112rpx;border-radius:16rpx;"></view>
   </block>
 
   <view wx:elif="{{phones.length === 0}}" class="empty">
-    <view class="empty-icon">📭</view>
+    <view class="empty-illustration">
+      <view class="empty-circle">
+        <text class="empty-emoji">📭</text>
+      </view>
+    </view>
     <view class="empty-title">暂无绑定号码</view>
     <view class="empty-desc">添加后即可自动查件</view>
   </view>
 
   <block wx:else>
+    <view class="list-header">
+      <text class="list-title">已绑定号码</text>
+      <text class="list-count">{{phones.length}} 个</text>
+    </view>
     <view class="phone-item" wx:for="{{phones}}" wx:key="*this">
       <view class="phone-main">
         <view class="phone-avatar">{{index + 1}}</view>
         <view class="phone-detail">
           <view class="phone-number">{{item}}</view>
-          <view class="phone-tag">已绑定</view>
+          <view class="phone-tag">
+            <text class="tag-dot"></text>
+            已绑定
+          </view>
         </view>
       </view>
       <view class="phone-remove" data-phone="{{item}}" bindtap="onDelete">移除</view>
