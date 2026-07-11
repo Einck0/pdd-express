@@ -8,7 +8,7 @@
         class="input"
         type="number"
         maxlength="11"
-        placeholder="输入凭证"
+        placeholder="输入号码"
         value="{{phone}}"
         bindinput="onPhoneInput"
         bindfocus="onInputFocus"
