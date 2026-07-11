@@ -1,74 +1,68 @@
 // app.js
+const config = require('./config/config');
+const api = require('./utils/api');
+
 App({
   globalData: {
-    wxid: null,  // 用户wxid，初始为null
+    wxid: null,
   },
-  // onLaunch() {
-  //   // 启动小程序时尝试登录
-  //   this.wxLogin();
-  // },
 
-  async wxLogin() {
+  config,
+  api,
+
+  onLaunch() {
+    this.ensureLogin();
+  },
+
+  /**
+   * 确保已登录，带重试
+   * @param {number} retries - 已重试次数（内部用）
+   * @returns {Promise<string>} openid
+   */
+  ensureLogin(retries = 0) {
+    if (this.globalData.wxid) {
+      return Promise.resolve(this.globalData.wxid);
+    }
+
     return new Promise((resolve, reject) => {
       wx.login({
-        success: async (res) => {
-          if (res.code) {
-            try {
-              const loginRes = await this.request({
-                url: '/wxlogin',
-                method: 'POST',
-                data: { code: res.code },
-              });
-
-              if (loginRes.statusCode >= 200 && loginRes.statusCode < 300) {
-                this.globalData.wxid = loginRes.data.openid;
-                resolve(loginRes.data.openid); // 返回openid
-              } else {
-                console.error('微信登录失败:', loginRes);
-                reject(new Error('微信登录失败'));
-              }
-            } catch (error) {
-              console.error('微信登录请求错误:', error);
-              reject(error);
-            }
-          } else {
-            console.error('获取用户登录态失败！' + res.errMsg);
-            reject(new Error('获取用户登录态失败'));
+        success: (loginRes) => {
+          if (!loginRes.code) {
+            this._retryOrReject(retries, '获取登录凭证失败', resolve, reject);
+            return;
           }
+
+          api
+            .wxLogin(loginRes.code)
+            .then((data) => {
+              if (data && data.openid) {
+                this.globalData.wxid = data.openid;
+                resolve(data.openid);
+              } else {
+                this._retryOrReject(retries, '登录返回数据异常', resolve, reject);
+              }
+            })
+            .catch((err) => {
+              this._retryOrReject(retries, err.message || '登录请求失败', resolve, reject);
+            });
         },
-        fail: (err) => {
-          console.error('wx.login调用失败', err);
-          reject(err);
+        fail: () => {
+          this._retryOrReject(retries, 'wx.login 调用失败', resolve, reject);
         },
       });
     });
   },
 
-  request({ url, method = 'GET', data = {} }) {
-    const baseUrl = this.config.apiBaseUrl;
-    const fullUrl = baseUrl + url;
-
-    return new Promise((resolve, reject) => {
-      wx.request({
-        url: fullUrl,
-        method: method,
-        data: data,
-        header: { 'content-type': 'application/json' },
-        success: (res) => {
-          resolve(res);
-        },
-        fail: (err) => {
-          console.error('请求失败:', err);
-          wx.showToast({
-            title: '网络错误',
-            icon: 'error',
-            duration: 2000,
-          });
-          reject(err);
-        },
-      });
-    });
+  _retryOrReject(retries, msg, resolve, reject) {
+    if (retries < config.loginMaxRetries) {
+      console.warn(`登录失败: ${msg}，第${retries + 1}次重试...`);
+      setTimeout(() => {
+        this.ensureLogin(retries + 1).then(resolve).catch(reject);
+      }, config.loginRetryDelay);
+    } else {
+      console.error('多次登录失败:', msg);
+      wx.showToast({ title: '登录失败，请稍后重试', icon: 'none', duration: 2500 });
+      reject(new Error(msg));
+    }
   },
-  // 简化调用，并添加配置
-  config: require('./config.js').default,
 });

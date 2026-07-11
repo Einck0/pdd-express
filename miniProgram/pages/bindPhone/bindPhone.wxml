@@ -1,34 +1,70 @@
-<view class="container">
-  <input class="bind-phone-input" placeholder="请输入手机号" bindinput="onPhoneInputChange" value="{{phoneInput}}" />
+<!-- pages/bindPhone/bindPhone.wxml -->
+<view class="page-bind">
 
-  <!-- 同意用户协议 -->
-  <label class="agree-terms">
-    <checkbox-group bindchange="bindAgreeChange">
-      <checkbox value="agree" checked="{{agreeTerms}}" />我已阅读并同意
-    </checkbox-group>
-      <text class="agreement-link" bindtap="toggleAgreement">《用户协议》</text>
-      <text class="agreement-link" bindtap="togglePrivacy">《隐私协议》</text>
-  </label>
+  <!-- 添加区 -->
+  <view class="add-card card">
+    <view class="add-title">添加手机号</view>
+    <input
+      class="phone-input"
+      placeholder="输入11位手机号"
+      type="number"
+      maxlength="11"
+      value="{{phoneInput}}"
+      bindinput="onPhoneInput"
+      confirm-type="done"
+      bindconfirm="onAdd"
+    />
 
-  <view wx:if="{{showAgreement}}">
-    <scroll-view scroll-y style="height: 400rpx;">
-        <import src="./agreement" />
-        <template is="agreement" />
+    <!-- 协议勾选 -->
+    <label class="agree-row">
+      <checkbox-group bindchange="onAgreeChange">
+        <checkbox value="agree" checked="{{agreeTerms}}" color="#4F7CFF" />
+      </checkbox-group>
+      <view class="agree-text">
+        我已阅读并同意
+        <text class="agreement-link" bindtap="toggleAgreement">《用户协议》</text>
+        <text class="agreement-link" bindtap="togglePrivacy">《隐私协议》</text>
+      </view>
+    </label>
+
+    <!-- 协议展开区 -->
+    <scroll-view wx:if="{{showAgreement}}" scroll-y class="agreement-scroll">
+      <import src="./agreement.wxml" />
+      <template is="agreement" />
     </scroll-view>
-  </view>
 
-  <view wx:if="{{showPrivacy}}">
-    <scroll-view scroll-y style="height: 400rpx;">
-      <import src="./privacy" />
+    <scroll-view wx:if="{{showPrivacy}}" scroll-y class="agreement-scroll">
+      <import src="./privacy.wxml" />
       <template is="privacy" />
     </scroll-view>
+
+    <button class="btn-primary" disabled="{{!agreeTerms}}" bindtap="onAdd">
+      添加手机号
+    </button>
   </view>
 
-  <button bindtap="addPhoneNumber" class="add-phone-button" disabled="{{!agreeTerms}}">添加手机号</button>
+  <!-- 手机号列表 -->
+  <view class="list-section">
+    <view class="list-title">已绑定手机号</view>
 
-  <view wx:for="{{phoneNumbers}}" wx:key="*this" class="phone-list-item">
-    <text>{{item}}</text>
-    <button bindtap="deletePhoneNumber" data-phone="{{item}}" class="delete-button">删除</button>
+    <block wx:if="{{loading}}">
+      <view class="skeleton skeleton-phone"></view>
+      <view class="skeleton skeleton-phone"></view>
+    </block>
+
+    <block wx:elif="{{phoneNumbers.length > 0}}">
+      <view class="phone-card" wx:for="{{phoneNumbers}}" wx:key="*this">
+        <text class="phone-num">{{item}}</text>
+        <button class="btn-danger" size="mini" bindtap="onDelete" data-phone="{{item}}">
+          删除
+        </button>
+      </view>
+    </block>
+
+    <view wx:elif="{{!loading}}" class="empty-state">
+      <view class="empty-icon">📱</view>
+      <view class="empty-text">暂未绑定手机号</view>
+    </view>
   </view>
-  <button bindtap="navigateToHome" class="back-button">返回首页</button>
+
 </view>

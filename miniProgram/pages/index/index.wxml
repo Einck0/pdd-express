@@ -1,34 +1,65 @@
 <!-- pages/index/index.wxml -->
-<view class="container">
-  <view class="banner">{{bannerText}}</view>
-  <view class="input-area">
-    <input class="search-input" placeholder="请输入单号或手机号" bindinput="onInputChange" value="{{searchInput}}" />
+<view class="page-index">
+
+  <!-- 顶部轮播公告 -->
+  <view class="banner-bar">
+    <swiper class="banner-swiper" autoplay circular interval="{{3000}}" vertical display-multiple-items="1">
+      <swiper-item wx:for="{{bannerTexts}}" wx:key="*this">
+        <view class="banner-text">{{item}}</view>
+      </swiper-item>
+    </swiper>
   </view>
 
-  <view class="button-group">
-    <button class="bind-button" bindtap="navigateToBindPhone">绑定手机号</button>
-    <button class="search-button" bindtap="searchPackages">查件</button>
-    <button class="refresh-button" bindtap="refreshPackages">刷新</button>
+  <!-- 搜索区 -->
+  <view class="search-wrap">
+    <input
+      class="search-input"
+      placeholder="输入单号或手机号查件"
+      value="{{searchInput}}"
+      bindinput="onSearchInput"
+      confirm-type="search"
+      bindconfirm="onSearch"
+    />
+    <button class="btn-search" bindtap="onSearch">查件</button>
   </view>
 
-  <view wx:if="{{packages.length > 0}}">
-    <view wx:for="{{packages}}" wx:key="waybill_code" class="package-item">
-      <!-- Flex 容器 -->
-      <view class="package-details">
-        <view class="waybill-code">{{item.waybill_code}}</view>
-        <view class="customer-name">
-          {{item.customer_name ? item.customer_name: ''}}
-        </view>
-        <view class="mobile">
-          {{item.mobile ? item.mobile : ''}}
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="action-btn refresh-btn" bindtap="onRefresh" size="mini">🔄 刷新</button>
+    <button class="action-btn bind-btn" bindtap="onGoToBind" size="mini">📱 管理手机号</button>
+  </view>
+
+  <!-- 骨架屏加载态 -->
+  <block wx:if="{{loading}}">
+    <view class="skeleton skeleton-card"></view>
+    <view class="skeleton skeleton-card"></view>
+    <view class="skeleton skeleton-card"></view>
+  </block>
+
+  <!-- 包裹列表 -->
+  <block wx:elif="{{packages.length > 0}}">
+    <view class="package-card" wx:for="{{packages}}" wx:key="waybill_code">
+      <view class="package-left">
+        <view class="pkg-code">{{item.waybill_code}}</view>
+        <view class="pkg-info">
+          <text wx:if="{{item.customer_name}}" class="pkg-name">{{item.customer_name}}</text>
+          <text wx:if="{{item.mobile}}" class="pkg-phone">{{item.mobile}}</text>
         </view>
       </view>
-      <view class="pickup-code">{{item.pickup_code}}</view>
+      <view class="package-right">
+        <view class="pickup-badge">{{item.pickup_code || '—'}}</view>
+        <view class="pickup-label">取件码</view>
+      </view>
     </view>
-  </view>
-  <view wx:else>
-    <view wx:if="{{phoneNumbers.length>0}}">暂无包裹信息</view>
-    <view wx:else>请先绑定手机号</view>
-  </view>
+  </block>
+
+  <!-- 空状态 -->
+  <block wx:elif="{{!loading}}">
+    <view class="empty-state">
+      <view class="empty-icon">📦</view>
+      <view class="empty-text" wx:if="{{phoneNumbers.length > 0}}">暂无包裹</view>
+      <view class="empty-text" wx:else>请先到「手机号」页面添加手机号</view>
+    </view>
+  </block>
 
 </view>

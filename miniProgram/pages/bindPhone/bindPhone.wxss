@@ -1,13 +1,76 @@
 /* pages/bindPhone/bindPhone.wxss */
+.page-bind {
+  padding: 24rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
 
-/* 你可以根据app.wxss中的定义调整这里样式 */
-.phone-item {
+/* ---- 添加卡片 ---- */
+.add-card {
+  margin-bottom: 32rpx;
+}
+
+.add-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+.phone-input {
+  background: var(--bg);
+  border-radius: 40rpx;
+  padding: 20rpx 32rpx;
+  font-size: 30rpx;
+  margin-bottom: 20rpx;
+  height: 80rpx;
+  box-sizing: border-box;
+}
+
+/* ---- 协议 ---- */
+.agree-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.agree-text {
+  line-height: 1.6;
+}
+
+/* ---- 列表 ---- */
+.list-section {
+  margin-top: 16rpx;
+}
+
+.list-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  color: var(--text-secondary);
+}
+
+.phone-card {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 使元素水平分布 */
-  margin-bottom: 10rpx;
-  padding: 10rpx;
-  border: 1px solid #eee;
-  border-radius: 10rpx;
-  background-color: white;
+  justify-content: space-between;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28rpx 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.phone-num {
+  font-size: 34rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+.skeleton-phone {
+  height: 88rpx;
+  margin-bottom: 16rpx;
+  border-radius: var(--radius);
 }
