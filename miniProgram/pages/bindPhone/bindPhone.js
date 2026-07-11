@@ -54,8 +54,8 @@ Page({
     var that = this;
     var phone = this.data.phone.trim();
 
-    if (!/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的号码', icon: 'none' });
+    if (phone.length < 5 || !/^[a-zA-Z0-9_-]+$/.test(phone)) {
+      wx.showToast({ title: '至少5位，支持字母数字_-', icon: 'none' });
       return;
     }
 
