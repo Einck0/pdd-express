@@ -4,10 +4,19 @@ var api = require('./utils/api');
 App({
   globalData: {
     wxid: null,
+    loginCallbacks: [],
   },
 
   config: config,
   api: api,
+
+  onLogin: function (cb) {
+    if (this.globalData.wxid) {
+      cb(this.globalData.wxid);
+    } else {
+      this.globalData.loginCallbacks.push(cb);
+    }
+  },
 
   onLaunch: function () {
     this.login();
@@ -28,9 +37,11 @@ App({
           return;
         }
         api.wxLogin(res.code).then(function (data) {
-          if (data && data.openid) {
-            that.globalData.wxid = data.openid;
-            try { wx.setStorageSync('wxid', data.openid); } catch (e) {}
+          if (data && data.wxid) {
+            that.globalData.wxid = data.wxid;
+            try { wx.setStorageSync('wxid', data.wxid); } catch (e) {}
+            that.globalData.loginCallbacks.forEach(function (cb) { cb(data.wxid); });
+            that.globalData.loginCallbacks = [];
           } else {
             that.retryLogin(attempt, 'openid 为空');
           }

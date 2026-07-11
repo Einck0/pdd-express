@@ -20,7 +20,8 @@ Page({
   },
 
   onShow: function () {
-    this.loadData();
+    var that = this;
+    app.onLogin(function () { that.loadData(); });
   },
 
   onPullDownRefresh: function () {

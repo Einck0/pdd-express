@@ -9,7 +9,8 @@ Page({
   },
 
   onShow: function () {
-    this.loadPhones();
+    var that = this;
+    app.onLogin(function () { that.loadPhones(); });
   },
 
   /* ── 数据 ── */
