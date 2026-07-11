@@ -1,13 +1,19 @@
+"""
+日志配置模块
+提供统一的日志格式和文件/控制台输出。
+"""
+
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from settings import get_settings
+from config import get_settings
 
 _CONFIGURED = False
 
 
 class _ExtraFormatter(logging.Formatter):
+    """自定义格式器，确保 wxid 字段始终存在"""
     def format(self, record):
         if not hasattr(record, "wxid"):
             record.wxid = "-"
@@ -15,6 +21,14 @@ class _ExtraFormatter(logging.Formatter):
 
 
 def configure_logging(name: str) -> logging.Logger:
+    """配置并返回指定名称的 logger
+
+    Args:
+        name: logger 名称，通常为模块名
+
+    Returns:
+        logging.Logger: 配置好的 logger
+    """
     global _CONFIGURED
     settings = get_settings()
     settings.log_dir.mkdir(parents=True, exist_ok=True)
