@@ -14,8 +14,8 @@ def validate_phone(phone: str) -> bool:
 
 
 def validate_keyword(keyword: str) -> bool:
-    """校验搜索关键词（至少4个字符）"""
-    if not keyword or len(keyword) < 4:
+    """校验搜索关键词（至少5个字符，支持字母数字下划线中划线）"""
+    if not keyword or len(keyword) < 5:
         return False
     return True
 
