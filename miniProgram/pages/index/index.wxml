@@ -22,7 +22,7 @@
       />
       <view class="input-clear" wx:if="{{keyword}}" bindtap="onClear">✕</view>
     </view>
-    <view class="btn btn-brand btn-sm search-btn" bindtap="onSearch">查件</view>
+    <view class="btn btn-brand search-btn" bindtap="onSearch">查件</view>
   </view>
 
   <!-- 快捷操作 -->
@@ -74,7 +74,6 @@
           </view>
         </view>
         <view class="package-right" wx:if="{{item.pickup_code}}">
-          <view class="package-badge">待取</view>
           <view class="package-code">{{item.pickup_code}}</view>
         </view>
       </view>
