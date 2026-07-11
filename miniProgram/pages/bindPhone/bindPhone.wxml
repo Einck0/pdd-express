@@ -2,6 +2,8 @@
   手机号管理页模板
   结构：输入区 → 手机号列表 → 协议展开
 -->
+<import src="./agreement.wxml" />
+<import src="./privacy.wxml" />
 <view class="page-container">
 
   <!-- 输入区 -->
