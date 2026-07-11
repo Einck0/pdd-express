@@ -22,7 +22,7 @@
       />
       <view class="input-clear" wx:if="{{keyword}}" bindtap="onClear">✕</view>
     </view>
-    <view class="btn btn-brand btn-sm search-btn" bindtap="onSearch">查件</view>
+    <view class="btn btn-brand search-btn" bindtap="onSearch">查件</view>
   </view>
 
   <!-- 快捷操作 -->
@@ -32,7 +32,7 @@
       <text>刷新</text>
     </view>
     <view class="shortcut" bindtap="onGoBindPhone">
-      <text class="shortcut-icon">📱</text>
+      <text class="shortcut-icon">📋</text>
       <text>号码</text>
     </view>
   </view>
@@ -47,7 +47,7 @@
 
   <!-- 空状态：未绑定 -->
   <view wx:elif="{{!hasPhones}}" class="empty">
-    <view class="empty-icon">📱</view>
+    <view class="empty-icon">📋</view>
     <view class="empty-title">还没有绑定号码</view>
     <view class="empty-desc">绑定号码后自动为你查件</view>
     <view class="btn btn-brand btn-sm" style="width:240rpx;" bindtap="onGoBindPhone">去绑定</view>
@@ -74,7 +74,6 @@
           </view>
         </view>
         <view class="package-right" wx:if="{{item.pickup_code}}">
-          <view class="package-badge">待取</view>
           <view class="package-code">{{item.pickup_code}}</view>
         </view>
       </view>

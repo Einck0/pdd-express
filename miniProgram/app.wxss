@@ -41,13 +41,13 @@ page {
   --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, .06);
 
   /* ── 字号 ── */
-  --text-xs: 20rpx;
-  --text-sm: 24rpx;
-  --text-base: 28rpx;
-  --text-lg: 32rpx;
-  --text-xl: 36rpx;
-  --text-2xl: 48rpx;
-  --text-3xl: 64rpx;
+  --text-xs: 22rpx;
+  --text-sm: 26rpx;
+  --text-base: 30rpx;
+  --text-lg: 34rpx;
+  --text-xl: 38rpx;
+  --text-2xl: 50rpx;
+  --text-3xl: 66rpx;
 
   /* ── 全局基础 ── */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
