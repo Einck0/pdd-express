@@ -60,15 +60,14 @@ Page({
 
   _loadData: function () {
     var that = this;
-    return app.api.getPhones().then(function (data) {
+    return app.api.getPackages().then(function (data) {
       var phones = data.phones || [];
-      that.setData({ phones: phones, hasPhones: phones.length > 0 });
-      if (phones.length === 0) {
-        that.setData({ loading: false, packages: [] });
-        return;
-      }
-      return app.api.getPackages().then(function (d2) {
-        that.setData({ packages: d2.packages || [], loading: false });
+      var packages = data.packages || [];
+      that.setData({
+        phones: phones,
+        hasPhones: phones.length > 0,
+        packages: packages,
+        loading: false,
       });
     }).catch(function () {
       that.setData({ loading: false });
