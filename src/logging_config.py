@@ -12,6 +12,21 @@ from config import get_settings
 _CONFIGURED = False
 
 
+class _RequestLogFilter(logging.Filter):
+    """请求级日志过滤器，自动从 Flask request 对象注入 wxid
+    如果 log 调用已通过 extra={'wxid': ...} 提供，则不覆盖。
+    """
+    def filter(self, record):
+        if getattr(record, 'wxid', '-') != '-':
+            return True
+        try:
+            from flask import request
+            record.wxid = getattr(request, 'wxid', '-')
+        except RuntimeError:
+            record.wxid = '-'
+        return True
+
+
 class _ExtraFormatter(logging.Formatter):
     """自定义格式器，确保 wxid 字段始终存在"""
     def format(self, record):
@@ -47,6 +62,9 @@ def configure_logging(name: str) -> logging.Logger:
         console_handler.setFormatter(formatter)
         root.addHandler(console_handler)
 
+        # 全局过滤器：自动从 Flask request 注入 wxid
+        root.addFilter(_RequestLogFilter())
+
         _CONFIGURED = True
 
     logger = logging.getLogger(name)
@@ -62,6 +80,7 @@ def configure_logging(name: str) -> logging.Logger:
             backupCount=5,
             encoding="utf-8",
         )
+        file_handler.addFilter(_RequestLogFilter())
         file_handler.setFormatter(
             _ExtraFormatter(
                 fmt="%(asctime)s %(levelname)s [%(name)s] [wxid=%(wxid)s]: %(message)s",
