@@ -5,25 +5,30 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "查件小程序",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#4F7CFF",
+    "navigationBarTitleText": "快递查询",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F6F7FB"
   },
   "tabBar": {
+    "color": "#999",
+    "selectedColor": "#4F7CFF",
+    "backgroundColor": "#fff",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "查件",
+        "iconPath": "",
+        "selectedIconPath": ""
       },
       {
         "pagePath": "pages/bindPhone/bindPhone",
-        "text": "管理手机号"
+        "text": "手机号",
+        "iconPath": "",
+        "selectedIconPath": ""
       }
-    ],
-    "color": "#999",
-    "selectedColor": "#2782e7",
-    "backgroundColor": "#fff"
-    
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",

@@ -1,0 +1,113 @@
+/* pages/index/index.wxss */
+.page-index {
+  padding: 0 24rpx 40rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ---- Banner ---- */
+.banner-bar {
+  margin: 20rpx 0 8rpx;
+  background: var(--primary-light);
+  border-radius: 32rpx;
+  overflow: hidden;
+  height: 64rpx;
+}
+
+.banner-swiper {
+  height: 64rpx;
+}
+
+.banner-text {
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--primary);
+  padding: 0 24rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- 操作按钮 ---- */
+.action-bar {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.action-btn {
+  flex: 1;
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1rpx solid var(--border) !important;
+  border-radius: 32rpx !important;
+  font-size: 24rpx !important;
+  padding: 0 20rpx !important;
+  height: 60rpx !important;
+  line-height: 60rpx !important;
+  text-align: center;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+/* ---- 包裹卡片 ---- */
+.package-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28rpx 32rpx;
+  margin-bottom: 20rpx;
+}
+
+.package-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.pkg-code {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10rpx;
+  word-break: break-all;
+}
+
+.pkg-info {
+  display: flex;
+  gap: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.pkg-name, .pkg-phone {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.package-right {
+  flex-shrink: 0;
+  margin-left: 24rpx;
+  text-align: center;
+}
+
+.pickup-badge {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--danger);
+  line-height: 1.2;
+  letter-spacing: 4rpx;
+}
+
+.pickup-label {
+  font-size: 20rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}

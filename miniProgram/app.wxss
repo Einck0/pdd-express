@@ -1,197 +1,170 @@
-/**app.wxss**/
-.container {
-  padding: 20rpx;
-  box-sizing: border-box;
-  background-color: #f5f5f5;
+/* ============================
+   全局样式 - 快递查询小程序
+   主色: #4F7CFF  成功: #07C160  危险: #FA5151
+   ============================ */
+
+page {
+  --primary: #4F7CFF;
+  --primary-light: #EDF2FF;
+  --success: #07C160;
+  --danger: #FA5151;
+  --text: #333;
+  --text-secondary: #999;
+  --bg: #F6F7FB;
+  --card-bg: #fff;
+  --border: #EBEDF0;
+  --radius: 16rpx;
+  --shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   font-size: 28rpx;
-  color: #333;
+  color: var(--text);
+  line-height: 1.6;
 }
 
-/* 首页样式 */
-.banner {
-  width: 100%;
-  height: 80rpx;
-  line-height: 80rpx;
+/* 卡片 */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32rpx;
+  margin: 24rpx 0;
+}
+
+/* 主按钮 */
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  padding: 22rpx 0;
   text-align: center;
-  background-color: #f0f0f0;
-  margin-bottom: 20rpx;
-  border-radius: 10rpx;
-  overflow: hidden;
+  width: 100%;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 
-.input-area {
-  margin-bottom: 20rpx;
+.btn-primary[disabled] {
+  opacity: 0.5;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+  padding: 14rpx 32rpx;
+  line-height: 1.5;
+}
+
+.btn-danger::after {
+  border: none;
+}
+
+/* 搜索框 */
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 24rpx 0;
 }
 
 .search-input {
-  width: 100%; /* 占据父容器的全部宽度 */
-  padding: 15rpx; /* 增加 padding */
-  height: 80rpx;  /* 增加高度 */
-  border: 1px solid #ccc;
+  flex: 1;
+  background: var(--card-bg);
   border-radius: 40rpx;
+  padding: 20rpx 32rpx;
+  font-size: 28rpx;
+  box-shadow: var(--shadow);
+  height: 80rpx;
   box-sizing: border-box;
-  font-size: 40rpx;
 }
 
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.button-group button {
-  display: flex; /* 使用 Flexbox 布局 */
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中，如果需要的话 */
-  width: 30%;
-  font-size: 40rpx;
-  color: white;
-  padding: 10rpx 40rpx;
-  border-radius: 30rpx;
-  margin-bottom: 30rpx;
-  text-align: center; 
-}
-
-.bind-button {
-  background-color: #2782e7;
-}
-
-.search-button {
-  background-color: #43a047;
-}
-
-.refresh-button {
-  background-color: #795548;
-}
-
-.package-item {
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.waybill-code {
-  font-weight: bold;
-  margin-bottom: 10rpx;
-  font-size: 32rpx;
-}
-
-.customer-name {
-  margin-bottom: 5rpx;
-}
-
-.mobile {
-  margin-bottom: 5rpx;
-}
-
-.pickup-code {
-  font-size: 40rpx;
-  font-weight: bold;
-  color: #e64340;
-}
-
-/* 绑定手机号页面的样式 */
-.bind-phone-input {
-  width: 100%; /* 占据父容器的全部宽度 */
-  padding: 15rpx; /* 增加 padding */
-  height: 80rpx;  /* 增加高度 */
-  border: 1px solid #ccc;
+.btn-search {
+  flex-shrink: 0;
+  background: var(--primary);
+  color: #fff;
+  border: none;
   border-radius: 40rpx;
+  font-size: 28rpx;
+  padding: 0 40rpx;
+  height: 80rpx;
+  line-height: 80rpx;
   box-sizing: border-box;
-  font-size: 40rpx;
-  margin-bottom: 20rpx; /* 添加下边距 */
-  margin-top: 20rpx; /* 添加下边距 */
 }
 
-.phone-list-item {
+.btn-search::after {
+  border: none;
+}
+
+/* 空状态 */
+.empty-state {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 20rpx;
-  border-bottom: 1px solid #eee;
-  font-size: 60rpx;
-  margin-right: 40rpx;
-}
-.phone-list-item text {
-  flex-grow: 1;           /* 文本占据大部分空间 */
-  margin-right: 40rpx;    /* 在文本右侧增加间距 */
-}
-.delete-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10rpx 20rpx;
-  border-radius: 10rpx;
-  margin-left: 10rpx;
+  justify-content: center;
+  padding: 120rpx 0;
+  color: var(--text-secondary);
 }
 
-.back-button {
-  background-color: #43a047;
-  color: white;
-  padding: 10rpx 20rpx;
-  border-radius: 10rpx;
-  text-align: center;
+.empty-state .empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
 }
 
-.add-phone-button {
-  background-color: #2782e7;
-  color: white;
-  padding: 10rpx 20rpx;
-  border-radius: 10rpx;
-  margin-bottom: 20rpx;
-  text-align: center;
+.empty-state .empty-text {
+  font-size: 28rpx;
 }
 
-.package-item {
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex; /* 设置为 Flex 容器 */
-  justify-content: space-between; /* 将子元素分散对齐，pickup_code会跑到最右边 */
-  align-items: center; /* 垂直居中对齐 */
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: 8rpx;
 }
 
-.package-details {
-  flex: 1; /*  占用剩余空间 */
-  margin-right: 20rpx;
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }
 
-.waybill-code {
-  font-weight: bold;
-  margin-bottom: 10rpx;
-  font-size: 32rpx;
+.skeleton-card {
+  height: 180rpx;
+  margin: 24rpx 0;
+  border-radius: var(--radius);
 }
 
-.customer-name {
-  margin-bottom: 5rpx;
+/* 协议链接 */
+.agreement-link {
+  color: var(--primary);
+  text-decoration: underline;
 }
 
-.mobile {
-  margin-bottom: 5rpx;
-}
-
-.pickup-code {
-  font-size: 48rpx; /*  放大字体 */
-  font-weight: bold;
-  color: #e64340;
-
-}
-
-.agreement-link{
-  color: #2782e7;
-    text-decoration: underline;
-}
-.agree-terms {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
+/* 协议内容区 */
+.agreement-scroll {
+  height: 400rpx;
+  background: #fafafa;
+  border-radius: var(--radius);
+  padding: 24rpx;
+  margin: 16rpx 0;
   font-size: 24rpx;
+  line-height: 2;
 }
 
-.agreement-link, .privacy-link{
-  color: #2782e7;
-    text-decoration: underline;
+.agreement-scroll .yhxy {
+  display: block;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 24rpx;
 }
