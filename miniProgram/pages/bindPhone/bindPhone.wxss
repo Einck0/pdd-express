@@ -1,0 +1,13 @@
+/* pages/bindPhone/bindPhone.wxss */
+
+/* 你可以根据app.wxss中的定义调整这里样式 */
+.phone-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 使元素水平分布 */
+  margin-bottom: 10rpx;
+  padding: 10rpx;
+  border: 1px solid #eee;
+  border-radius: 10rpx;
+  background-color: white;
+}

@@ -1,0 +1,197 @@
+/**app.wxss**/
+.container {
+  padding: 20rpx;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 首页样式 */
+.banner {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  background-color: #f0f0f0;
+  margin-bottom: 20rpx;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.input-area {
+  margin-bottom: 20rpx;
+}
+
+.search-input {
+  width: 100%; /* 占据父容器的全部宽度 */
+  padding: 15rpx; /* 增加 padding */
+  height: 80rpx;  /* 增加高度 */
+  border: 1px solid #ccc;
+  border-radius: 40rpx;
+  box-sizing: border-box;
+  font-size: 40rpx;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.button-group button {
+  display: flex; /* 使用 Flexbox 布局 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中，如果需要的话 */
+  width: 30%;
+  font-size: 40rpx;
+  color: white;
+  padding: 10rpx 40rpx;
+  border-radius: 30rpx;
+  margin-bottom: 30rpx;
+  text-align: center; 
+}
+
+.bind-button {
+  background-color: #2782e7;
+}
+
+.search-button {
+  background-color: #43a047;
+}
+
+.refresh-button {
+  background-color: #795548;
+}
+
+.package-item {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.waybill-code {
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  font-size: 32rpx;
+}
+
+.customer-name {
+  margin-bottom: 5rpx;
+}
+
+.mobile {
+  margin-bottom: 5rpx;
+}
+
+.pickup-code {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #e64340;
+}
+
+/* 绑定手机号页面的样式 */
+.bind-phone-input {
+  width: 100%; /* 占据父容器的全部宽度 */
+  padding: 15rpx; /* 增加 padding */
+  height: 80rpx;  /* 增加高度 */
+  border: 1px solid #ccc;
+  border-radius: 40rpx;
+  box-sizing: border-box;
+  font-size: 40rpx;
+  margin-bottom: 20rpx; /* 添加下边距 */
+  margin-top: 20rpx; /* 添加下边距 */
+}
+
+.phone-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1px solid #eee;
+  font-size: 60rpx;
+  margin-right: 40rpx;
+}
+.phone-list-item text {
+  flex-grow: 1;           /* 文本占据大部分空间 */
+  margin-right: 40rpx;    /* 在文本右侧增加间距 */
+}
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  margin-left: 10rpx;
+}
+
+.back-button {
+  background-color: #43a047;
+  color: white;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  text-align: center;
+}
+
+.add-phone-button {
+  background-color: #2782e7;
+  color: white;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.package-item {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex; /* 设置为 Flex 容器 */
+  justify-content: space-between; /* 将子元素分散对齐，pickup_code会跑到最右边 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.package-details {
+  flex: 1; /*  占用剩余空间 */
+  margin-right: 20rpx;
+}
+
+.waybill-code {
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  font-size: 32rpx;
+}
+
+.customer-name {
+  margin-bottom: 5rpx;
+}
+
+.mobile {
+  margin-bottom: 5rpx;
+}
+
+.pickup-code {
+  font-size: 48rpx; /*  放大字体 */
+  font-weight: bold;
+  color: #e64340;
+
+}
+
+.agreement-link{
+  color: #2782e7;
+    text-decoration: underline;
+}
+.agree-terms {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+}
+
+.agreement-link, .privacy-link{
+  color: #2782e7;
+    text-decoration: underline;
+}

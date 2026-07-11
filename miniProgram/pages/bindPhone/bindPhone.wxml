@@ -1,0 +1,34 @@
+<view class="container">
+  <input class="bind-phone-input" placeholder="请输入手机号" bindinput="onPhoneInputChange" value="{{phoneInput}}" />
+
+  <!-- 同意用户协议 -->
+  <label class="agree-terms">
+    <checkbox-group bindchange="bindAgreeChange">
+      <checkbox value="agree" checked="{{agreeTerms}}" />我已阅读并同意
+    </checkbox-group>
+      <text class="agreement-link" bindtap="toggleAgreement">《用户协议》</text>
+      <text class="agreement-link" bindtap="togglePrivacy">《隐私协议》</text>
+  </label>
+
+  <view wx:if="{{showAgreement}}">
+    <scroll-view scroll-y style="height: 400rpx;">
+        <import src="./agreement" />
+        <template is="agreement" />
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{showPrivacy}}">
+    <scroll-view scroll-y style="height: 400rpx;">
+      <import src="./privacy" />
+      <template is="privacy" />
+    </scroll-view>
+  </view>
+
+  <button bindtap="addPhoneNumber" class="add-phone-button" disabled="{{!agreeTerms}}">添加手机号</button>
+
+  <view wx:for="{{phoneNumbers}}" wx:key="*this" class="phone-list-item">
+    <text>{{item}}</text>
+    <button bindtap="deletePhoneNumber" data-phone="{{item}}" class="delete-button">删除</button>
+  </view>
+  <button bindtap="navigateToHome" class="back-button">返回首页</button>
+</view>

@@ -1,0 +1,11 @@
+{
+	"ios": {
+		"name": "miniAppByEinck"
+	},
+	"android": {
+		"name": "miniAppByEinck"
+	},
+	"common": {
+		"name": "miniAppByEinck"
+	}
+}

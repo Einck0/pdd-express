@@ -1,0 +1,34 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <view class="banner">{{bannerText}}</view>
+  <view class="input-area">
+    <input class="search-input" placeholder="请输入单号或手机号" bindinput="onInputChange" value="{{searchInput}}" />
+  </view>
+
+  <view class="button-group">
+    <button class="bind-button" bindtap="navigateToBindPhone">绑定手机号</button>
+    <button class="search-button" bindtap="searchPackages">查件</button>
+    <button class="refresh-button" bindtap="refreshPackages">刷新</button>
+  </view>
+
+  <view wx:if="{{packages.length > 0}}">
+    <view wx:for="{{packages}}" wx:key="waybill_code" class="package-item">
+      <!-- Flex 容器 -->
+      <view class="package-details">
+        <view class="waybill-code">{{item.waybill_code}}</view>
+        <view class="customer-name">
+          {{item.customer_name ? item.customer_name: ''}}
+        </view>
+        <view class="mobile">
+          {{item.mobile ? item.mobile : ''}}
+        </view>
+      </view>
+      <view class="pickup-code">{{item.pickup_code}}</view>
+    </view>
+  </view>
+  <view wx:else>
+    <view wx:if="{{phoneNumbers.length>0}}">暂无包裹信息</view>
+    <view wx:else>请先绑定手机号</view>
+  </view>
+
+</view>
