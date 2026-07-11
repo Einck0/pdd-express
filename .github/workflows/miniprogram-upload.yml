@@ -16,23 +16,31 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm install miniprogram-ci -g
+      - run: npm install miniprogram-ci
 
       - name: Write upload key
-        run: echo "${{ secrets.WX_UPLOAD_KEY }}" > /tmp/upload.key
+        env:
+          WX_UPLOAD_KEY: ${{ secrets.WX_UPLOAD_KEY }}
+        run: |
+          if [ -z "$WX_UPLOAD_KEY" ]; then
+            echo "Error: WX_UPLOAD_KEY secret not set"
+            exit 1
+          fi
+          echo "$WX_UPLOAD_KEY" > /tmp/upload.key
 
       - name: Upload to WeChat
+        env:
+          WX_APPID: ${{ secrets.WX_APPID }}
         run: |
           version=$(git rev-parse --short HEAD)
           branch=${GITHUB_REF_NAME}
-          desc="[${branch}] ${GITHUB_SHA::7} - $(git log -1 --pretty=%s)"
-          miniprogram-ci upload \
-            --appid ${{ secrets.WX_APPID }} \
-            --project-path miniProgram \
+          desc="[${branch}] $(git log -1 --pretty=%s)"
+          npx miniprogram-ci upload \
+            --appid "$WX_APPID" \
+            --project-path "${{ github.workspace }}/miniProgram" \
             --private-key-path /tmp/upload.key \
             --version "${version}" \
-            --desc "${desc}" \
-            --robot 1
+            --desc "${desc}"
 
       - name: Cleanup
         if: always()
