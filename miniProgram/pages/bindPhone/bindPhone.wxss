@@ -1,43 +1,80 @@
 /* 手机号管理页样式 */
-.page { padding: 24rpx; }
 
+.page {
+  padding: var(--space-md);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ── 协议勾选 ── */
 .agree-row {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  font-size: 24rpx;
-  color: var(--text-muted);
+  gap: var(--space-xs);
+  margin: var(--space-md) 0;
+  font-size: var(--text-sm);
+  flex-wrap: wrap;
 }
 
-.agree-text { color: var(--text-muted); }
-
-.link {
-  color: var(--primary);
-  font-size: 24rpx;
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36rpx;
+  height: 36rpx;
+  border: 3rpx solid var(--color-separator);
+  border-radius: 6rpx;
+  font-size: var(--text-xs);
+  color: #fff;
+  transition: all .15s;
+  flex-shrink: 0;
 }
 
+.checkbox-checked {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.agree-text { color: var(--color-text-muted); }
+
+.agree-link {
+  color: var(--color-link);
+}
+
+/* ── 协议内容 ── */
 .agreement-card {
-  font-size: 22rpx;
-  color: var(--text-sub);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
   line-height: 1.8;
 }
 
-/* 手机号卡片 */
+/* ── 区块标题 ── */
+.section-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin: var(--space-lg) 0 var(--space-sm);
+}
+
+/* ── 手机号卡片 ── */
 .phone-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28rpx 24rpx;
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 16rpx;
+  padding: var(--space-lg) !important;
 }
 
+.phone-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.phone-icon { font-size: 36rpx; }
+
 .phone-number {
-  font-size: 32rpx;
+  font-size: var(--text-lg);
   font-weight: 600;
-  font-family: "DIN", "Helvetica Neue", monospace;
+  font-family: "DIN Alternate", "Helvetica Neue", monospace;
   letter-spacing: 2rpx;
 }
 
@@ -45,12 +82,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12rpx 28rpx;
-  background: rgba(250, 81, 81, 0.1);
-  color: var(--danger);
+  padding: 12rpx var(--space-md);
+  background: rgba(250, 81, 81, .08);
+  color: var(--color-danger);
   border-radius: var(--radius-sm);
-  font-size: 24rpx;
+  font-size: var(--text-sm);
   font-weight: 500;
+  transition: background .15s;
 }
 
-.phone-delete:active { opacity: 0.8; }
+.phone-delete:active { background: rgba(250, 81, 81, .16); }

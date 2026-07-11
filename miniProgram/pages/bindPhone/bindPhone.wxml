@@ -6,54 +6,72 @@
 
   <!-- 输入区 -->
   <view class="card">
-    <input
-      class="input"
-      type="number"
-      maxlength="11"
-      placeholder="输入手机号"
-      value="{{phone}}"
-      bindinput="onPhoneInput"
-    />
-    <view class="agree-row mt-md">
-      <checkbox-group bindchange="onAgreeChange">
-        <checkbox value="agree" checked="{{agreed}}" />
-      </checkbox-group>
-      <text class="agree-text">我已阅读并同意</text>
-      <text class="link" bindtap="showAgreement = !showAgreement">《用户协议》</text>
-      <text class="link" bindtap="showPrivacy = !showPrivacy">《隐私政策》</text>
+    <view class="input-wrap {{inputFocus ? 'input-wrap-focus' : ''}}">
+      <input
+        class="input"
+        type="number"
+        maxlength="11"
+        placeholder="输入手机号"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+        bindfocus="onInputFocus"
+        bindblur="onInputBlur"
+      />
+      <view class="input-clear" wx:if="{{phone}}" bindtap="onPhoneClear">✕</view>
     </view>
-    <button class="btn btn-primary mt-md" disabled="{{!agreed}}" bindtap="onAdd">添加手机号</button>
+
+    <view class="agree-row">
+      <view class="checkbox {{agreed ? 'checkbox-checked' : ''}}" bindtap="onAgreeToggle">
+        <text wx:if="{{agreed}}">✓</text>
+      </view>
+      <text class="agree-text">我已阅读并同意</text>
+      <text class="agree-link" bindtap="onToggleAgreement">《用户协议》</text>
+      <text class="agree-link" bindtap="onTogglePrivacy">《隐私政策》</text>
+    </view>
+
+    <button
+      class="btn btn-brand {{adding ? 'btn-loading' : ''}}"
+      disabled="{{!agreed || adding}}"
+      bindtap="onAdd"
+    >{{adding ? '添加中…' : '添加手机号'}}</button>
   </view>
 
-  <!-- 用户协议展开 -->
+  <!-- 协议展开 -->
   <view class="card agreement-card" wx:if="{{showAgreement}}">
-    <scroll-view scroll-y style="max-height: 500rpx;">
+    <scroll-view scroll-y style="max-height:500rpx;">
       <template is="agreement" />
     </scroll-view>
   </view>
 
-  <!-- 隐私政策展开 -->
   <view class="card agreement-card" wx:if="{{showPrivacy}}">
-    <scroll-view scroll-y style="max-height: 500rpx;">
+    <scroll-view scroll-y style="max-height:500rpx;">
       <template is="privacy" />
     </scroll-view>
   </view>
 
   <!-- 手机号列表 -->
-  <view wx:if="{{loading}}" class="mt-lg">
-    <view class="skeleton" style="height:100rpx;margin-bottom:16rpx;border-radius:16rpx;" wx:for="{{[1,2]}}" wx:key="*this"></view>
-  </view>
+  <view class="section-title text-secondary" wx:if="{{!loading && phones.length > 0}}">已绑定手机号</view>
 
-  <view wx:elif="{{phones.length === 0}}" class="empty mt-lg">
+  <block wx:if="{{loading}}">
+    <view class="card" wx:for="{{[1,2]}}" wx:key="*this" style="padding:32rpx;">
+      <view class="skeleton" style="width:50%;height:32rpx;"></view>
+    </view>
+  </block>
+
+  <view wx:elif="{{phones.length === 0}}" class="empty">
     <view class="empty-icon">📱</view>
-    <view class="empty-text">还没有绑定手机号</view>
+    <view class="empty-title">还没有绑定手机号</view>
+    <view class="empty-desc">添加手机号后自动为你查件</view>
   </view>
 
-  <view wx:else class="mt-lg">
-    <view class="phone-card" wx:for="{{phones}}" wx:key="*this">
-      <text class="phone-number">{{item}}</text>
+  <block wx:else>
+    <view class="card phone-card" wx:for="{{phones}}" wx:key="*this">
+      <view class="phone-left">
+        <view class="phone-icon">📱</view>
+        <view class="phone-number">{{item}}</view>
+      </view>
       <view class="phone-delete" data-phone="{{item}}" bindtap="onDelete">删除</view>
     </view>
-  </view>
+  </block>
 
 </view>

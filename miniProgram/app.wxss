@@ -1,132 +1,211 @@
-/* ═══ 全局变量 ═══ */
-page {
-  --primary: #4F7CFF;
-  --primary-light: #EEF2FF;
-  --success: #07C160;
-  --danger: #FA5151;
-  --warning: #FFC300;
-  --bg: #F5F6FA;
-  --card: #FFFFFF;
-  --text: #1A1A2E;
-  --text-sub: #666666;
-  --text-muted: #999999;
-  --border: #EEEEEE;
-  --shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-  --radius: 16rpx;
-  --radius-sm: 8rpx;
+/* ═══════════════════════════════════════════════
+   设计系统 — 基于 WeUI v2.6 变量体系
+   色彩/间距/圆角/阴影/字号 全局统一
+   ═══════════════════════════════════════════════ */
 
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
-  font-size: 28rpx;
-  color: var(--text);
-  background: var(--bg);
+page {
+  /* ── 色彩（WeUI 品牌色 + 自定义扩展） ── */
+  --color-brand: #07c160;           /* WeUI BRAND-100 微信绿 */
+  --color-brand-light: #b4ecce;     /* WeUI BRAND-170 */
+  --color-brand-dark: #059a4c;      /* WeUI BRAND-80 */
+  --color-danger: #fa5151;          /* WeUI RED-100 */
+  --color-warning: #ffc300;         /* WeUI YELLOW-100 */
+  --color-info: #10aeff;            /* WeUI BLUE-100 */
+  --color-link: #576b95;            /* WeUI LINK-100 */
+
+  --color-text: rgba(0, 0, 0, .9);  /* WeUI FG-0 */
+  --color-text-secondary: rgba(0, 0, 0, .55); /* WeUI FG-1 */
+  --color-text-muted: rgba(0, 0, 0, .3);      /* WeUI FG-2 */
+
+  --color-bg: #f7f7f7;              /* WeUI BG-1 */
+  --color-bg-hover: #ededed;        /* WeUI BG-0 */
+  --color-card: #ffffff;            /* WeUI BG-2 */
+
+  --color-separator: rgba(0, 0, 0, .1); /* WeUI SEPARATOR-0 */
+
+  /* ── 间距 ── */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 48rpx;
+
+  /* ── 圆角 ── */
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-full: 999rpx;
+
+  /* ── 阴影 ── */
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, .04);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, .06);
+
+  /* ── 字号 ── */
+  --text-xs: 20rpx;
+  --text-sm: 24rpx;
+  --text-base: 28rpx;
+  --text-lg: 32rpx;
+  --text-xl: 36rpx;
+  --text-2xl: 48rpx;
+  --text-3xl: 64rpx;
+
+  /* ── 全局基础 ── */
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ═══ 通用工具类 ═══ */
+/* ═══════════════════════════════════════════════
+   通用组件
+   ═══════════════════════════════════════════════ */
 
-/* 弹性布局 */
-.flex { display: flex; }
-.flex-col { display: flex; flex-direction: column; }
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.flex-between { display: flex; align-items: center; justify-content: space-between; }
-
-/* 间距 */
-.gap-sm { gap: 8rpx; }
-.gap-md { gap: 16rpx; }
-.gap-lg { gap: 24rpx; }
-
-.p-sm { padding: 8rpx 16rpx; }
-.p-md { padding: 16rpx 24rpx; }
-.p-lg { padding: 24rpx 32rpx; }
-.px-lg { padding-left: 32rpx; padding-right: 32rpx; }
-
-.mt-sm { margin-top: 8rpx; }
-.mt-md { margin-top: 16rpx; }
-.mt-lg { margin-top: 24rpx; }
-.mb-md { margin-bottom: 16rpx; }
-.mb-lg { margin-bottom: 24rpx; }
-
-/* 卡片 */
+/* ── 卡片 ── */
 .card {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24rpx;
-  margin-bottom: 16rpx;
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
-/* 按钮 */
+/* ── 按钮 ── */
 .btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 88rpx;
-  padding: 0 32rpx;
+  height: 96rpx;
   border-radius: var(--radius-sm);
-  font-size: 28rpx;
+  font-size: var(--text-lg);
   font-weight: 500;
   border: none;
   line-height: 1;
+  transition: opacity .15s;
 }
 
 .btn::after { border: none; }
 
-.btn-primary {
-  background: var(--primary);
-  color: #FFFFFF;
+.btn:active { opacity: .8; }
+
+.btn-brand {
+  background: var(--color-brand);
+  color: #fff;
 }
 
-.btn-primary:active {
-  opacity: 0.85;
+.btn-brand[disabled] {
+  background: var(--color-brand-light);
+  color: rgba(255, 255, 255, .6);
 }
 
 .btn-danger {
-  background: var(--danger);
-  color: #FFFFFF;
+  background: var(--color-danger);
+  color: #fff;
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--primary);
-  border: 2rpx solid var(--primary);
+  color: var(--color-brand);
+  border: 2rpx solid var(--color-brand);
 }
 
 .btn-sm {
   height: 64rpx;
-  padding: 0 24rpx;
-  font-size: 24rpx;
+  padding: 0 var(--space-md);
+  font-size: var(--text-sm);
 }
 
-/* 输入框 */
-.input {
-  height: 88rpx;
-  padding: 0 24rpx;
-  background: var(--card);
-  border: 2rpx solid var(--border);
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::before {
+  content: '';
+  display: inline-block;
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, .3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin-right: var(--space-sm);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 输入框 ── */
+.input-wrap {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+  padding: 0 var(--space-md);
+  background: var(--color-bg);
   border-radius: var(--radius-sm);
-  font-size: 28rpx;
-  color: var(--text);
+  border: 2rpx solid transparent;
+  transition: border-color .2s, background .2s;
 }
 
-.input-focus {
-  border-color: var(--primary);
+.input-wrap-focus {
+  background: var(--color-card);
+  border-color: var(--color-brand);
 }
 
-/* 文字 */
-.text-primary { color: var(--primary); }
-.text-sub { color: var(--text-sub); }
-.text-muted { color: var(--text-muted); }
-.text-danger { color: var(--danger); }
-.text-success { color: var(--success); }
-.text-bold { font-weight: 600; }
+.input-wrap .input {
+  flex: 1;
+  height: 100%;
+  font-size: var(--text-base);
+  color: var(--color-text);
+}
 
-/* 骨架屏 */
+.input-wrap .input-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  color: #fff;
+  font-size: var(--text-xs);
+  margin-left: var(--space-sm);
+}
+
+/* ── 空状态 ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx var(--space-xl) 80rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: var(--space-lg);
+  opacity: .6;
+}
+
+.empty-title {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── 骨架屏 ── */
 .skeleton {
-  background: linear-gradient(90deg, #F0F0F0 25%, #E8E8E8 50%, #F0F0F0 75%);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 400% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
 }
 
 @keyframes shimmer {
@@ -134,26 +213,13 @@ page {
   100% { background-position: -100% 0; }
 }
 
-/* 空状态 */
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80rpx 32rpx;
-}
+/* ── 文字辅助 ── */
+.text-brand { color: var(--color-brand); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-danger { color: var(--color-danger); }
 
-.empty-icon {
-  font-size: 96rpx;
-  margin-bottom: 24rpx;
-}
-
-.empty-text {
-  font-size: 28rpx;
-  color: var(--text-muted);
-}
-
-/* 安全区 */
+/* ── 安全区 ── */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }

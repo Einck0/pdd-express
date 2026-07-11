@@ -1,96 +1,85 @@
 /**
  * API 统一封装
- * 所有接口集中管理，统一错误处理
+ * 集中管理所有接口，自动携带 Authorization token
  */
 
 var config = require('../config/config');
 
-var BASE_URL = config.apiBaseUrl;
+var BASE = config.apiBaseUrl;
 var TIMEOUT = config.timeout || 15000;
 
-/**
- * 通用请求
- * @param {string} method - GET/POST/PUT/DELETE
- * @param {string} path - 接口路径，如 /phones
- * @param {object} data - 请求体
- * @returns {Promise}
- */
+/* ── 底层请求 ── */
+
 function request(method, path, data) {
-  var token = '';
-  try { token = wx.getStorageSync('wxid') || ''; } catch (e) {}
-
-  var header = { 'content-type': 'application/json' };
-  if (token) {
-    header['Authorization'] = 'Bearer ' + token;
-  }
-
   return new Promise(function (resolve, reject) {
+    var token = '';
+    try { token = wx.getStorageSync('wxid') || ''; } catch (e) {}
+
+    var header = { 'content-type': 'application/json' };
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token;
+    }
+
     wx.request({
-      url: BASE_URL + path,
+      url: BASE + path,
       method: method,
       data: data || {},
       header: header,
       timeout: TIMEOUT,
       success: function (res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data);
+          var body = res.data || {};
+          // 兼容两种格式：{code,data} 或 {success,data}
+          if (body.code === 0) {
+            resolve(body.data || {});
+          } else if (body.success) {
+            resolve(body.data || body);
+          } else {
+            var msg = body.message || body.error || '请求失败';
+            wx.showToast({ title: msg, icon: 'none' });
+            reject({ code: body.code, message: msg });
+          }
+        } else if (res.statusCode === 401) {
+          wx.showToast({ title: '请重新进入小程序', icon: 'none' });
+          reject({ code: 401, message: 'token 失效' });
         } else {
-          var msg = (res.data && res.data.error) || '请求失败';
-          wx.showToast({ title: msg, icon: 'none' });
-          reject({ statusCode: res.statusCode, message: msg });
+          var msg2 = (res.data && (res.data.message || res.data.error)) || '请求失败';
+          wx.showToast({ title: msg2, icon: 'none' });
+          reject({ statusCode: res.statusCode, message: msg2 });
         }
       },
-      fail: function (err) {
-        wx.showToast({ title: '网络错误', icon: 'none' });
-        reject(err);
+      fail: function () {
+        wx.showToast({ title: '网络连接失败', icon: 'none' });
+        reject({ message: '网络错误' });
       },
     });
   });
 }
 
-// ── 具体接口 ──
+/* ── 接口 ── */
 
-/** 微信登录 */
 function wxLogin(code) {
-  return request('POST', '/wxlogin', { code: code }).then(function (res) {
-    var data = res.data || res;
-    // 登录成功后存储 token
-    if (data && data.token) {
-      try { wx.setStorageSync('wxid', data.token); } catch (e) {}
-    }
-    return data;
-  });
+  return request('POST', '/wxlogin', { code: code });
 }
 
-/** 获取手机号列表 */
 function getPhones() {
-  return request('GET', '/phones').then(function (res) {
-    return res.data || res;
-  });
+  return request('GET', '/phones');
 }
 
-/** 添加手机号 */
 function addPhone(phone) {
   return request('POST', '/phones', { phone: phone });
 }
 
-/** 删除手机号 */
 function deletePhone(phone) {
   return request('DELETE', '/phones', { phone: phone });
 }
 
-/** 获取包裹列表 */
 function getPackages() {
-  return request('GET', '/package').then(function (res) {
-    return res.data || res;
-  });
+  return request('GET', '/package');
 }
 
-/** 搜索包裹 */
 function searchPackages(keyword) {
-  return request('POST', '/package', { keyword: keyword }).then(function (res) {
-    return res.data || res;
-  });
+  return request('POST', '/package', { keyword: keyword });
 }
 
 module.exports = {
