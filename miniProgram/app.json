@@ -4,9 +4,9 @@
     "pages/bindPhone/bindPhone"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarBackgroundColor": "#07C160",
     "navigationBarTitleText": "快递取件助手",
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "backgroundColor": "#F5F6FA",
     "backgroundTextStyle": "dark"
   },

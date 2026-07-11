@@ -1,18 +1,21 @@
 <!-- 首页：查件 -->
 <view class="page">
 
-  <!-- 公告 -->
-  <view class="notice" wx:if="{{notices.length}}">
-    <view class="notice-icon">📢</view>
-    <view class="notice-text">{{notices[noticeIdx]}}</view>
+  <!-- 顶部品牌区 -->
+  <view class="hero">
+    <view class="hero-inner">
+      <view class="hero-title">📦 快递取件</view>
+      <view class="hero-desc">绑定号码，包裹到站自动提醒</view>
+    </view>
   </view>
 
   <!-- 搜索 -->
   <view class="search-wrap">
     <view class="input-wrap {{searchFocus ? 'input-wrap-focus' : ''}}">
+      <view class="input-prefix">🔍</view>
       <input
         class="input"
-        placeholder="单号后5位 / 全部单号 / 号码"
+        placeholder="输入单号后5位 / 全部单号 / 号码"
         value="{{keyword}}"
         bindinput="onInput"
         bindfocus="searchFocus = true"
@@ -22,7 +25,7 @@
       />
       <view class="input-clear" wx:if="{{keyword}}" bindtap="onClear">✕</view>
     </view>
-    <view class="btn btn-brand search-btn" bindtap="onSearch">查件</view>
+    <view class="btn btn-brand search-btn" bindtap="onSearch">查询</view>
   </view>
 
   <!-- 快捷操作 -->
@@ -33,8 +36,14 @@
     </view>
     <view class="shortcut" bindtap="onGoBindPhone">
       <text class="shortcut-icon">📋</text>
-      <text>号码</text>
+      <text>号码管理</text>
     </view>
+  </view>
+
+  <!-- 公告 -->
+  <view class="notice" wx:if="{{notices.length}}">
+    <view class="notice-icon">📢</view>
+    <view class="notice-text">{{notices[noticeIdx]}}</view>
   </view>
 
   <!-- 骨架屏 -->
@@ -47,37 +56,60 @@
 
   <!-- 空状态：未绑定 -->
   <view wx:elif="{{!hasPhones}}" class="empty">
-    <view class="empty-icon">📋</view>
+    <view class="empty-illustration">
+      <view class="empty-circle">
+        <text class="empty-emoji">📋</text>
+      </view>
+    </view>
     <view class="empty-title">还没有绑定号码</view>
-    <view class="empty-desc">绑定号码后自动为你查件</view>
-    <view class="btn btn-brand btn-sm" style="width:240rpx;" bindtap="onGoBindPhone">去绑定</view>
+    <view class="empty-desc">绑定后自动为你查件，包裹到站不再错过</view>
+    <view class="btn btn-brand btn-lg" bindtap="onGoBindPhone">
+      <text class="btn-icon">＋</text> 添加号码
+    </view>
   </view>
 
   <!-- 空状态：无包裹 -->
   <view wx:elif="{{packages.length === 0}}" class="empty">
-    <view class="empty-icon">📦</view>
-    <view class="empty-title">暂无待取包裹</view>
-    <view class="empty-desc">有包裹时会自动出现在这里</view>
+    <view class="empty-illustration">
+      <view class="empty-circle empty-circle-ok">
+        <text class="empty-emoji">✅</text>
+      </view>
+    </view>
+    <view class="empty-title">全部取完了</view>
+    <view class="empty-desc">暂无待取包裹，有新包裹会自动出现</view>
   </view>
 
   <!-- 包裹列表 -->
   <view wx:else class="package-list">
+    <view class="list-header">
+      <text class="list-title">待取包裹</text>
+      <text class="list-count">{{packages.length}} 件</text>
+    </view>
     <view class="card package-card" wx:for="{{packages}}" wx:key="waybill_code"
       data-code="{{item.pickup_code}}" data-waybill="{{item.waybill_code}}"
       bindtap="onCopyCode" bindlongpress="onCopyWaybill">
-      <view class="package-main">
-        <view class="package-left">
+      <view class="package-accent"></view>
+      <view class="package-body">
+        <view class="package-top">
+          <view class="package-code-wrap">
+            <view class="package-code-label">取件码</view>
+            <view class="package-code">{{item.pickup_code || '—'}}</view>
+          </view>
+          <view class="package-badge" wx:if="{{item.pickup_code}}">
+            <text class="badge-dot"></text>
+            <text>待取</text>
+          </view>
+        </view>
+        <view class="package-bottom">
           <view class="package-waybill">{{item.waybill_code}}</view>
-          <view class="package-info text-secondary">
-            {{item.customer_name || ''}}
+          <view class="package-info">
+            <text wx:if="{{item.customer_name}}">{{item.customer_name}}</text>
             <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
           </view>
         </view>
-        <view class="package-right" wx:if="{{item.pickup_code}}">
-          <view class="package-code">{{item.pickup_code}}</view>
-        </view>
       </view>
     </view>
+    <view class="list-hint">点击复制取件码 · 长按复制单号</view>
   </view>
 
   <!-- Toast -->
