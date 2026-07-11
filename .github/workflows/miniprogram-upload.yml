@@ -51,7 +51,8 @@ jobs:
             --project-path "${{ github.workspace }}/miniProgram" \
             --private-key-path /tmp/upload.key \
             --version "${version}" \
-            --desc "${desc}"
+            --desc "${desc}" \
+            --robot 1
 
       - name: Cleanup
         if: always()
