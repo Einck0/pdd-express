@@ -53,7 +53,7 @@ Page({
       return Promise.resolve();
     }
 
-    return app.api.getPhones(wxid).then(function (res) {
+    return app.api.getPhones().then(function (res) {
       var phones = res.phones || [];
       that.setData({ phones: phones, hasPhones: phones.length > 0 });
 
@@ -62,7 +62,7 @@ Page({
         return;
       }
 
-      return app.api.getPackages(wxid).then(function (res2) {
+      return app.api.getPackages().then(function (res2) {
         that.setData({
           packages: res2.packages || [],
           loading: false,
@@ -95,7 +95,7 @@ Page({
     }
 
     wx.showLoading({ title: '查询中...' });
-    app.api.searchPackages(wxid, keyword).then(function (res) {
+    app.api.searchPackages(keyword).then(function (res) {
       that.setData({ packages: res.packages || [] });
       if ((res.packages || []).length === 0) {
         wx.showToast({ title: '未查到包裹', icon: 'none' });

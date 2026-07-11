@@ -37,10 +37,10 @@ App({
           return;
         }
         api.wxLogin(res.code).then(function (data) {
-          if (data && data.wxid) {
-            that.globalData.wxid = data.wxid;
-            try { wx.setStorageSync('wxid', data.wxid); } catch (e) {}
-            that.globalData.loginCallbacks.forEach(function (cb) { cb(data.wxid); });
+          if (data && data.token) {
+            that.globalData.wxid = data.token;
+            try { wx.setStorageSync('wxid', data.token); } catch (e) {}
+            that.globalData.loginCallbacks.forEach(function (cb) { cb(data.token); });
             that.globalData.loginCallbacks = [];
           } else {
             that.retryLogin(attempt, 'openid 为空');

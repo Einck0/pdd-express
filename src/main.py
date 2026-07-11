@@ -41,44 +41,29 @@ class ExpressEndpointApp:
             methods=["GET"],
         )
         self.app.add_url_rule(
-            f"{self.API_PREFIX}/package/<wxid>",
-            view_func=self.query_package,
-            methods=["POST"],
-        )
-        self.app.add_url_rule(
-            f"{self.API_PREFIX}/package/",
-            view_func=self.query_package_body,
-            methods=["POST"],
-        )
-        self.app.add_url_rule(
-            f"{self.API_PREFIX}/package",
-            view_func=self.query_package_body,
-            methods=["POST"],
-        )
-        self.app.add_url_rule(
-            f"{self.API_PREFIX}/phones/<wxid>",
+            f"{self.API_PREFIX}/phones",
             view_func=self.get_phones,
             methods=["GET"],
         )
         self.app.add_url_rule(
-            f"{self.API_PREFIX}/package/<wxid>",
-            view_func=self.get_package_by_wxid,
-            methods=["GET"],
-        )
-        self.app.add_url_rule(
-            f"{self.API_PREFIX}/phones/<wxid>",
+            f"{self.API_PREFIX}/phones",
             view_func=self.add_phone,
             methods=["POST"],
         )
         self.app.add_url_rule(
-            f"{self.API_PREFIX}/phones/<wxid>",
-            view_func=self.update_phone,
-            methods=["PUT"],
-        )
-        self.app.add_url_rule(
-            f"{self.API_PREFIX}/phones/<wxid>",
+            f"{self.API_PREFIX}/phones",
             view_func=self.delete_phone,
             methods=["DELETE"],
+        )
+        self.app.add_url_rule(
+            f"{self.API_PREFIX}/package",
+            view_func=self.get_package_by_wxid,
+            methods=["GET"],
+        )
+        self.app.add_url_rule(
+            f"{self.API_PREFIX}/package",
+            view_func=self.query_package,
+            methods=["POST"],
         )
         self.app.add_url_rule(
             f"{self.API_PREFIX}/wxlogin",
@@ -100,6 +85,16 @@ class ExpressEndpointApp:
             payload["details"] = details
         return jsonify(payload), status
 
+    def get_wxid_from_token(self):
+        """从 Authorization 请求头解析 token（即 wxid）。"""
+        auth = request.headers.get("Authorization", "")
+        if not auth.startswith("Bearer "):
+            return None, self.fail("missing or invalid token", 401)
+        token = auth[7:].strip()
+        if not token:
+            return None, self.fail("missing or invalid token", 401)
+        return token, None
+
     def health_check(self):
         return self.ok(
             {
@@ -116,11 +111,10 @@ class ExpressEndpointApp:
             return self.fail("wxid is required", 400)
 
         existing = self.user_phone_service.get_user(wxid)
-        if existing:
-            return self.ok({"wxid": wxid}, message="user already exists")
+        if not existing:
+            self.user_phone_service.create_user_if_missing(wxid)
 
-        self.user_phone_service.create_user_if_missing(wxid)
-        return self.ok({"wxid": wxid}, message="user registered successfully", status=201)
+        return self.ok({"token": wxid}, message="login successful")
 
     def update_sub_pass_id(self):
         data = parse_json_body(request)
@@ -169,7 +163,11 @@ class ExpressEndpointApp:
             {"keys": list(self.package_service.cookies.keys())},
         )
 
-    def query_package(self, wxid: str):
+    def query_package(self):
+        wxid, err = self.get_wxid_from_token()
+        if err:
+            return err
+
         data = parse_json_body(request)
         keyword = str(data.get("keyword", "")).strip()
         if not keyword:
@@ -189,54 +187,33 @@ class ExpressEndpointApp:
             return self.fail("failed to query packages", 500)
 
         return self.ok(
-            {"wxid": wxid, "keyword": keyword, "packages": packages},
+            {"packages": packages},
             message="packages retrieved successfully",
         )
 
-    def query_package_body(self):
-        """Fallback: wxid and keyword both in request body."""
-        data = parse_json_body(request)
-        wxid = str(data.get("wxid", "")).strip()
-        keyword = str(data.get("keyword", "")).strip()
-        logger.info("query_package_body called: wxid=%s keyword=%s", wxid, keyword)
-        if not wxid:
-            return self.fail("wxid is required", 400)
-        if not keyword:
-            return self.fail("keyword is required", 400)
-        if len(keyword) < 4:
-            return self.fail("keyword length must be at least 4", 400)
+    def get_phones(self):
+        wxid, err = self.get_wxid_from_token()
+        if err:
+            return err
 
-        try:
-            packages = self.package_service.get_packages(keyword)
-        except Exception as e:
-            logger.exception(
-                "Error querying packages for wxid=%s: %s",
-                wxid,
-                e,
-                extra={"wxid": wxid},
-            )
-            return self.fail("failed to query packages", 500)
-
-        return self.ok(
-            {"wxid": wxid, "keyword": keyword, "packages": packages},
-            message="packages retrieved successfully",
-        )
-
-    def get_phones(self, wxid: str):
         user = self.user_phone_service.get_user(wxid)
         if not user:
             self.user_phone_service.create_user_if_missing(wxid)
             return self.ok(
-                {"wxid": wxid, "phones": []},
+                {"phones": []},
                 message="user created with empty phone list",
             )
 
         return self.ok(
-            {"wxid": wxid, "phones": self.user_phone_service.get_phones(wxid)},
+            {"phones": self.user_phone_service.get_phones(wxid)},
             message="phones retrieved successfully",
         )
 
-    def get_package_by_wxid(self, wxid: str):
+    def get_package_by_wxid(self):
+        wxid, err = self.get_wxid_from_token()
+        if err:
+            return err
+
         user = self.user_phone_service.get_user(wxid)
         if not user:
             return self.fail("wxid not found", 404, code=4001)
@@ -247,7 +224,7 @@ class ExpressEndpointApp:
             for phone in phones:
                 packages.extend(self.package_service.get_packages(phone))
             return self.ok(
-                {"wxid": wxid, "phones": phones, "packages": packages},
+                {"phones": phones, "packages": packages},
                 message="packages retrieved successfully",
             )
         except Exception as e:
@@ -259,7 +236,11 @@ class ExpressEndpointApp:
             )
             return self.fail("failed to retrieve packages", 500)
 
-    def add_phone(self, wxid: str):
+    def add_phone(self):
+        wxid, err = self.get_wxid_from_token()
+        if err:
+            return err
+
         data = parse_json_body(request)
         phone = str(data.get("phone", "")).strip()
         if not phone:
@@ -269,18 +250,11 @@ class ExpressEndpointApp:
             return self.fail(payload["error"], status)
         return self.ok(payload, message="phone added successfully", status=status)
 
-    def update_phone(self, wxid: str):
-        data = parse_json_body(request)
-        old_phone = str(data.get("old_phone", "")).strip()
-        new_phone = str(data.get("new_phone", "")).strip()
-        if not old_phone or not new_phone:
-            return self.fail("old_phone and new_phone are required", 400)
-        payload, status = self.user_phone_service.update_phone(wxid, old_phone, new_phone)
-        if status >= 400:
-            return self.fail(payload["error"], status)
-        return self.ok(payload, message="phone updated successfully", status=status)
+    def delete_phone(self):
+        wxid, err = self.get_wxid_from_token()
+        if err:
+            return err
 
-    def delete_phone(self, wxid: str):
         data = parse_json_body(request)
         phone = str(data.get("phone", "")).strip()
         if not phone:

@@ -11,17 +11,25 @@ var TIMEOUT = config.timeout || 15000;
 /**
  * 通用请求
  * @param {string} method - GET/POST/PUT/DELETE
- * @param {string} path - 接口路径，如 /phones/xxx
+ * @param {string} path - 接口路径，如 /phones
  * @param {object} data - 请求体
  * @returns {Promise}
  */
 function request(method, path, data) {
+  var token = '';
+  try { token = wx.getStorageSync('wxid') || ''; } catch (e) {}
+
+  var header = { 'content-type': 'application/json' };
+  if (token) {
+    header['Authorization'] = 'Bearer ' + token;
+  }
+
   return new Promise(function (resolve, reject) {
     wx.request({
       url: BASE_URL + path,
       method: method,
       data: data || {},
-      header: { 'content-type': 'application/json' },
+      header: header,
       timeout: TIMEOUT,
       success: function (res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -45,37 +53,42 @@ function request(method, path, data) {
 /** 微信登录 */
 function wxLogin(code) {
   return request('POST', '/wxlogin', { code: code }).then(function (res) {
-    return res.data || res;
+    var data = res.data || res;
+    // 登录成功后存储 token
+    if (data && data.token) {
+      try { wx.setStorageSync('wxid', data.token); } catch (e) {}
+    }
+    return data;
   });
 }
 
 /** 获取手机号列表 */
-function getPhones(wxid) {
-  return request('GET', '/phones/' + wxid).then(function (res) {
+function getPhones() {
+  return request('GET', '/phones').then(function (res) {
     return res.data || res;
   });
 }
 
 /** 添加手机号 */
-function addPhone(wxid, phone) {
-  return request('POST', '/phones/' + wxid, { phone: phone });
+function addPhone(phone) {
+  return request('POST', '/phones', { phone: phone });
 }
 
 /** 删除手机号 */
-function deletePhone(wxid, phone) {
-  return request('DELETE', '/phones/' + wxid, { phone: phone });
+function deletePhone(phone) {
+  return request('DELETE', '/phones', { phone: phone });
 }
 
 /** 获取包裹列表 */
-function getPackages(wxid) {
-  return request('GET', '/package/' + wxid).then(function (res) {
+function getPackages() {
+  return request('GET', '/package').then(function (res) {
     return res.data || res;
   });
 }
 
 /** 搜索包裹 */
-function searchPackages(wxid, keyword) {
-  return request('POST', '/package/' + wxid, { keyword: keyword }).then(function (res) {
+function searchPackages(keyword) {
+  return request('POST', '/package', { keyword: keyword }).then(function (res) {
     return res.data || res;
   });
 }

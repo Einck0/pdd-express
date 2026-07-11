@@ -20,7 +20,7 @@ Page({
     var wxid = app.globalData.wxid;
     if (!wxid) { that.setData({ loading: false }); return; }
 
-    app.api.getPhones(wxid).then(function (res) {
+    app.api.getPhones().then(function (res) {
       that.setData({ phones: res.phones || [], loading: false });
     }).catch(function () {
       that.setData({ loading: false });
@@ -58,7 +58,7 @@ Page({
     }
 
     wx.showLoading({ title: '添加中...' });
-    app.api.addPhone(wxid, phone).then(function () {
+    app.api.addPhone(phone).then(function () {
       wx.showToast({ title: '添加成功', icon: 'success' });
       that.setData({ phone: '' });
       that.loadPhones();
@@ -83,7 +83,7 @@ Page({
       success: function (res) {
         if (!res.confirm) return;
         wx.showLoading({ title: '删除中...' });
-        app.api.deletePhone(wxid, phone).then(function () {
+        app.api.deletePhone(phone).then(function () {
           wx.showToast({ title: '已删除', icon: 'success' });
           that.loadPhones();
         }).finally(function () {
