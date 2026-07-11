@@ -22,6 +22,23 @@ def _load_env_file(path: Path):
 _load_env_file(ENV_FILE)
 
 
+def update_env_value(key: str, value: str):
+    """Update a key in the .env file. Creates the file if missing."""
+    lines = []
+    found = False
+    if ENV_FILE.exists():
+        for line in ENV_FILE.read_text(encoding="utf-8").splitlines(keepends=True):
+            stripped = line.strip()
+            if stripped.startswith(f"{key}="):
+                lines.append(f"{key}={value}\n")
+                found = True
+            else:
+                lines.append(line)
+    if not found:
+        lines.append(f"{key}={value}\n")
+    ENV_FILE.write_text("".join(lines), encoding="utf-8")
+
+
 @dataclass(frozen=True)
 class Settings:
     base_dir: Path

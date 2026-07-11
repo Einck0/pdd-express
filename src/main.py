@@ -4,7 +4,7 @@ import requests
 from DBService import DBService
 from PackageService import PackageService
 from logging_config import configure_logging
-from settings import get_settings
+from settings import get_settings, update_env_value
 from user_service import UserPhoneService
 from utils_common import parse_json_body
 
@@ -31,8 +31,28 @@ class ExpressEndpointApp:
             methods=["POST"],
         )
         self.app.add_url_rule(
+            f"{self.API_PREFIX}/cookies",
+            view_func=self.set_cookies,
+            methods=["PUT"],
+        )
+        self.app.add_url_rule(
+            f"{self.API_PREFIX}/cookies",
+            view_func=self.get_cookies,
+            methods=["GET"],
+        )
+        self.app.add_url_rule(
             f"{self.API_PREFIX}/package/<wxid>",
             view_func=self.query_package,
+            methods=["POST"],
+        )
+        self.app.add_url_rule(
+            f"{self.API_PREFIX}/package/",
+            view_func=self.query_package_body,
+            methods=["POST"],
+        )
+        self.app.add_url_rule(
+            f"{self.API_PREFIX}/package",
+            view_func=self.query_package_body,
             methods=["POST"],
         )
         self.app.add_url_rule(
@@ -114,9 +134,73 @@ class ExpressEndpointApp:
             message="sub_pass_id updated in memory",
         )
 
+    def set_cookies(self):
+        """Set cookies via full cookie string or individual key-value pairs.
+        Also persists to .env file so changes survive container restarts."""
+        data = parse_json_body(request)
+        cookie_string = data.get("cookie_string")
+        cookies = data.get("cookies")
+
+        if not cookie_string and not cookies:
+            return self.fail("cookie_string or cookies is required", 400)
+
+        if cookie_string:
+            self.package_service.set_cookies(cookie_string)
+        elif cookies and isinstance(cookies, dict):
+            self.package_service.merge_cookies(cookies)
+
+        # Persist to .env
+        new_cookie_str = self.package_service.get_cookie_string()
+        try:
+            update_env_value("PDD_COOKIE_STRING", new_cookie_str)
+            logger.info("Cookie persisted to .env")
+        except Exception as e:
+            logger.error("Failed to persist cookie to .env: %s", e)
+            return self.fail("cookie updated in memory but failed to persist", 500)
+
+        return self.ok(
+            {"keys": list(self.package_service.cookies.keys())},
+            message="cookies updated and persisted",
+        )
+
+    def get_cookies(self):
+        """Return current cookie keys (not values) for debugging."""
+        return self.ok(
+            {"keys": list(self.package_service.cookies.keys())},
+        )
+
     def query_package(self, wxid: str):
         data = parse_json_body(request)
         keyword = str(data.get("keyword", "")).strip()
+        if not keyword:
+            return self.fail("keyword is required", 400)
+        if len(keyword) < 4:
+            return self.fail("keyword length must be at least 4", 400)
+
+        try:
+            packages = self.package_service.get_packages(keyword)
+        except Exception as e:
+            logger.exception(
+                "Error querying packages for wxid=%s: %s",
+                wxid,
+                e,
+                extra={"wxid": wxid},
+            )
+            return self.fail("failed to query packages", 500)
+
+        return self.ok(
+            {"wxid": wxid, "keyword": keyword, "packages": packages},
+            message="packages retrieved successfully",
+        )
+
+    def query_package_body(self):
+        """Fallback: wxid and keyword both in request body."""
+        data = parse_json_body(request)
+        wxid = str(data.get("wxid", "")).strip()
+        keyword = str(data.get("keyword", "")).strip()
+        logger.info("query_package_body called: wxid=%s keyword=%s", wxid, keyword)
+        if not wxid:
+            return self.fail("wxid is required", 400)
         if not keyword:
             return self.fail("keyword is required", 400)
         if len(keyword) < 4:
