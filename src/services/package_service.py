@@ -191,7 +191,7 @@ class PackageService:
             logger.error("Failed to get anti-content: %s", e)
 
     def get_response(self, code):
-        """发送包裹查询请求"""
+        """发送包裹查询请求，自动合并响应 Set-Cookie"""
         payload = {
             "content": str(code),
             "selected": False,
@@ -199,12 +199,27 @@ class PackageService:
             "page_index": 1,
             "waybill_status": 100,
         }
-        return requests.post(
+        resp = requests.post(
             REQUEST_URL,
             headers=self.headers,
             cookies=self.cookies,
             json=payload,
         )
+        self._capture_cookies(resp)
+        return resp
+
+    def _capture_cookies(self, resp):
+        """从响应的 Set-Cookie 头合并新 cookie 到内存，并持久化"""
+        if not resp.cookies:
+            return
+        updated = {}
+        for key, value in resp.cookies.items():
+            if value != self.cookies.get(key):
+                updated[key] = value
+            self.cookies[key] = value
+        if updated:
+            logger.info("Set-Cookie 更新: %s", list(updated.keys()))
+            self.persist_cookies_to_env()
 
     def parse_packages(self, response):
         """从 API 响应中提取包裹信息列表"""
