@@ -1,0 +1,12 @@
+miniProgram/
+.git/
+.github/
+*.db
+*.db-journal
+*.pyc
+__pycache__/
+.env
+logs/
+*.md
+LICENSE
+.gitignore
