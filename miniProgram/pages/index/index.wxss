@@ -132,6 +132,13 @@
   min-width: 0;
 }
 
+.package-waybill-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 6rpx;
+}
+
 .package-waybill {
   font-size: var(--text-base);
   font-weight: 600;
@@ -139,7 +146,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: 6rpx;
+}
+
+.copy-tag {
+  font-size: 20rpx;
+  color: var(--color-brand);
+  background: rgba(7, 193, 96, .08);
+  border: 1rpx solid rgba(7, 193, 96, .25);
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  line-height: 1.4;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+
+.copy-tag:active {
+  background: rgba(7, 193, 96, .2);
 }
 
 .package-info { font-size: var(--text-sm); }
@@ -149,6 +172,14 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+}
+
+.code-label {
+  font-size: 18rpx;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 1rpx;
+  margin-bottom: 4rpx;
 }
 
 .package-code {

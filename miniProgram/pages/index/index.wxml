@@ -79,21 +79,25 @@
     </view>
     <view class="card package-card" wx:for="{{packages}}" wx:key="waybill_code"
       data-code="{{item.pickup_code}}" data-waybill="{{item.waybill_code}}"
-      bindtap="onCopyCode" bindlongpress="onCopyWaybill">
+      bindtap="onCopyCode">
       <view class="package-main">
         <view class="package-left">
-          <view class="package-waybill">{{item.waybill_code}}</view>
+          <view class="package-waybill-row">
+            <view class="package-waybill">{{item.waybill_code}}</view>
+            <view class="copy-tag" catchtap="onCopyWaybill" data-waybill="{{item.waybill_code}}">复制单号</view>
+          </view>
           <view class="package-info text-secondary">
             {{item.customer_name || ''}}
             <text wx:if="{{item.mobile}}"> · {{item.mobile}}</text>
           </view>
         </view>
         <view class="package-right" wx:if="{{item.pickup_code}}">
+          <view class="code-label">取件码</view>
           <view class="package-code">{{item.pickup_code}}</view>
         </view>
       </view>
     </view>
-    <view class="list-hint">点击复制取件码 · 长按复制单号</view>
+    <view class="list-hint">点击卡片复制取件码 · 点击徽标复制单号</view>
   </view>
 
   <!-- Toast -->
