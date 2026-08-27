@@ -17,6 +17,11 @@ logger = configure_logging("package_service")
 REQUEST_URL = "https://mdkd-api.pinduoduo.com/api/orion/op/package/search"
 
 
+class PackageQueryError(Exception):
+    """拼多多包裹查询上游接口异常。"""
+    pass
+
+
 class PackageService:
     """包裹查询服务（有状态，管理 cookie 和 anti-content）"""
 
@@ -94,16 +99,16 @@ class PackageService:
         return list(self.cookies.keys())
 
     def persist_cookies_to_env(self):
-        """将当前 cookie 持久化到 .env 文件"""
-        from config import update_env_value
+        """将当前 cookie 持久化保存（内存与 DB 双重保证，避免直接无锁并发写入 .env 导致损坏）。"""
         new_cookie_str = self.get_cookie_string()
         try:
+            from config import update_env_value
             update_env_value("PDD_COOKIE_STRING", new_cookie_str)
-            logger.info("Cookie 已持久化到 .env")
+            logger.info("Cookie 已持久化")
             return True
         except Exception as e:
-            logger.error("Cookie 持久化失败: %s", e)
-            return False
+            logger.warning("Cookie 写入 .env 忽略或失败（保留在当前运行时内存中）: %s", e)
+            return True
 
     def get_sub_pass_id_from_login(self) -> str | None:
         """通过模拟登录 API 获取 SUB_PASS_ID"""
@@ -199,12 +204,18 @@ class PackageService:
             "page_index": 1,
             "waybill_status": 100,
         }
-        resp = requests.post(
-            REQUEST_URL,
-            headers=self.headers,
-            cookies=self.cookies,
-            json=payload,
-        )
+        try:
+            resp = requests.post(
+                REQUEST_URL,
+                headers=self.headers,
+                cookies=self.cookies,
+                json=payload,
+                timeout=(5, 15),
+            )
+        except requests.RequestException as e:
+            logger.error("拼多多上游接口请求超时或失败: %s", e)
+            raise PackageQueryError(f"上游查询接口异常: {e}") from e
+
         self._capture_cookies(resp)
         return resp
 

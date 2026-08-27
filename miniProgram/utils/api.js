@@ -29,11 +29,9 @@ function request(method, path, data) {
       success: function (res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           var body = res.data || {};
-          // 兼容两种格式：{code,data} 或 {success,data}
+          // 统一契约：后端规范返回 {code: 0, data, message}
           if (body.code === 0) {
             resolve(body.data || {});
-          } else if (body.success) {
-            resolve(body.data || body);
           } else {
             var msg = body.message || body.error || '请求失败';
             wx.showToast({ title: msg, icon: 'none' });

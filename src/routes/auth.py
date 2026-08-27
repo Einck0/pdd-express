@@ -46,4 +46,6 @@ def wx_login():
     if not existing:
         user_service.create_user_if_missing(openid)
 
-    return success_response(data={"token": openid}, message="登录成功")
+    from utils.token import generate_token
+    token = generate_token(openid)
+    return success_response(data={"token": token}, message="登录成功")

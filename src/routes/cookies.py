@@ -15,7 +15,14 @@ cookies_bp = Blueprint("cookies", __name__)
 @cookies_bp.route("/cookies", methods=["PUT"])
 @require_token
 def set_cookies():
-    """设置 cookie（完整字符串或单个键值对）"""
+    """设置 cookie（完整字符串或单个键值对），需要管理凭据校验。"""
+    from config import get_settings
+    settings = get_settings()
+    admin_key = getattr(settings, "admin_key", None) or settings.secret
+    req_key = request.headers.get("X-Admin-Key")
+    if admin_key and req_key != admin_key:
+        return error_response(403, "需要有效的管理密钥 (X-Admin-Key)")
+
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         data = {}
