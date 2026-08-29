@@ -121,6 +121,7 @@ Page({
   onCopyCode: function (e) {
     var code = e.currentTarget.dataset.code;
     if (!code) return;
+    try { wx.vibrateShort({ type: 'light' }); } catch (err) {}
     wx.setClipboardData({
       data: code,
       success: function () { wx.showToast({ title: '取件码已复制', icon: 'success' }); },
@@ -130,6 +131,7 @@ Page({
   onCopyWaybill: function (e) {
     var wb = e.currentTarget.dataset.waybill;
     if (!wb) return;
+    try { wx.vibrateShort({ type: 'light' }); } catch (err) {}
     wx.setClipboardData({
       data: wb,
       success: function () { wx.showToast({ title: '运单号已复制', icon: 'success' }); },

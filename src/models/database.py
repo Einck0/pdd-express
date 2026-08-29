@@ -62,8 +62,11 @@ class Database:
                 autocommit=False,
             )
 
-        # 默认 SQLite
-        conn = sqlite3.connect(self.settings.sqlite_db_path)
+        # 默认 SQLite，开启 WAL 并发写入模式与忙等待超时
+        conn = sqlite3.connect(self.settings.sqlite_db_path, timeout=15.0)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=5000")
+        conn.execute("PRAGMA synchronous=NORMAL")
         conn.row_factory = sqlite3.Row
         return conn
 
