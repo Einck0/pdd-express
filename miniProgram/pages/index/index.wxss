@@ -169,21 +169,13 @@
 
 .package-right {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.code-label {
-  font-size: 18rpx;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  letter-spacing: 1rpx;
-  margin-bottom: 4rpx;
-}
-
 .package-code {
-  font-size: 48rpx;
+  font-size: 58rpx;
   font-weight: 800;
   color: var(--color-danger);
   font-family: "DIN Alternate", "Helvetica Neue", monospace;

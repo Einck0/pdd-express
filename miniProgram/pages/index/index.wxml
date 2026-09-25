@@ -92,7 +92,6 @@
           </view>
         </view>
         <view class="package-right" wx:if="{{item.pickup_code}}">
-          <view class="code-label">取件码</view>
           <view class="package-code">{{item.pickup_code}}</view>
         </view>
       </view>
