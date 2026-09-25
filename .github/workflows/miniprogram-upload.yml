@@ -1,0 +1,59 @@
+name: Upload Mini Program
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - 'miniProgram/**'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - run: npm install miniprogram-ci
+
+      - name: Inject runtime config
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        run: |
+          cat > miniProgram/config/config.user.js << EOF
+          module.exports = {
+            apiBaseUrl: '${API_BASE_URL:-https://example.com/express}'
+          };
+          EOF
+          echo "config.user.js created"
+
+      - name: Write upload key
+        env:
+          WX_UPLOAD_KEY: ${{ secrets.WX_UPLOAD_KEY }}
+        run: |
+          if [ -z "$WX_UPLOAD_KEY" ]; then
+            echo "Error: WX_UPLOAD_KEY secret not set"
+            exit 1
+          fi
+          echo "$WX_UPLOAD_KEY" > /tmp/upload.key
+
+      - name: Upload to WeChat
+        env:
+          WX_APPID: ${{ secrets.WX_APPID }}
+        run: |
+          version="3.0.0.auto"
+          branch=${GITHUB_REF_NAME}
+          desc="[${branch}] $(git log -1 --pretty=%s)"
+          npx miniprogram-ci upload \
+            --appid "$WX_APPID" \
+            --project-path "${{ github.workspace }}/miniProgram" \
+            --private-key-path /tmp/upload.key \
+            --version "${version}" \
+            --desc "${desc}" \
+            --robot 1
+
+      - name: Cleanup
+        if: always()
+        run: rm -f /tmp/upload.key /tmp/config.user.js

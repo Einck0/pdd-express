@@ -1,3 +1,8 @@
+"""
+配置加载模块
+从环境变量和 .env 文件加载应用配置，提供统一的 Settings 数据类。
+"""
+
 import os
 from dataclasses import dataclass
 from functools import lru_cache
@@ -9,6 +14,7 @@ ENV_FILE = BASE_DIR / ".env"
 
 
 def _load_env_file(path: Path):
+    """从 .env 文件加载环境变量（不覆盖已有值）"""
     if not path.exists():
         return
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -23,7 +29,7 @@ _load_env_file(ENV_FILE)
 
 
 def update_env_value(key: str, value: str):
-    """Update a key in the .env file. Creates the file if missing."""
+    """更新 .env 文件中的指定键值，文件不存在则创建"""
     lines = []
     found = False
     if ENV_FILE.exists():
@@ -41,6 +47,7 @@ def update_env_value(key: str, value: str):
 
 @dataclass(frozen=True)
 class Settings:
+    """应用全局配置"""
     base_dir: Path
     src_dir: Path
     log_dir: Path
@@ -71,6 +78,7 @@ class Settings:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """获取全局配置（单例）"""
     log_dir = Path(os.getenv("PDD_LOG_DIR", str(BASE_DIR / "logs")))
     db_dir = Path(os.getenv("PDD_SQLITE_DATABASE_DIR", str(BASE_DIR)))
     if not db_dir.is_absolute():

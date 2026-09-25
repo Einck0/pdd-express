@@ -1,0 +1,225 @@
+/* ═══════════════════════════════════════════════
+   设计系统 — 基于 WeUI v2.6 变量体系
+   色彩/间距/圆角/阴影/字号 全局统一
+   ═══════════════════════════════════════════════ */
+
+page {
+  /* ── 色彩（WeUI 品牌色 + 自定义扩展） ── */
+  --color-brand: #07c160;           /* WeUI BRAND-100 微信绿 */
+  --color-brand-light: #b4ecce;     /* WeUI BRAND-170 */
+  --color-brand-dark: #059a4c;      /* WeUI BRAND-80 */
+  --color-danger: #fa5151;          /* WeUI RED-100 */
+  --color-warning: #ffc300;         /* WeUI YELLOW-100 */
+  --color-info: #10aeff;            /* WeUI BLUE-100 */
+  --color-link: #576b95;            /* WeUI LINK-100 */
+
+  --color-text: rgba(0, 0, 0, .9);  /* WeUI FG-0 */
+  --color-text-secondary: rgba(0, 0, 0, .55); /* WeUI FG-1 */
+  --color-text-muted: rgba(0, 0, 0, .3);      /* WeUI FG-2 */
+
+  --color-bg: #f7f7f7;              /* WeUI BG-1 */
+  --color-bg-hover: #ededed;        /* WeUI BG-0 */
+  --color-card: #ffffff;            /* WeUI BG-2 */
+
+  --color-separator: rgba(0, 0, 0, .1); /* WeUI SEPARATOR-0 */
+
+  /* ── 间距 ── */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 48rpx;
+
+  /* ── 圆角 ── */
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-full: 999rpx;
+
+  /* ── 阴影 ── */
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, .04);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, .06);
+
+  /* ── 字号 ── */
+  --text-xs: 22rpx;
+  --text-sm: 26rpx;
+  --text-base: 30rpx;
+  --text-lg: 34rpx;
+  --text-xl: 38rpx;
+  --text-2xl: 50rpx;
+  --text-3xl: 66rpx;
+
+  /* ── 全局基础 ── */
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   通用组件
+   ═══════════════════════════════════════════════ */
+
+/* ── 卡片 ── */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+/* ── 按钮 ── */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  border: none;
+  line-height: 1;
+  transition: opacity .15s;
+}
+
+.btn::after { border: none; }
+
+.btn:active { opacity: .8; }
+
+.btn-brand {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+.btn-brand[disabled] {
+  background: var(--color-brand-light);
+  color: rgba(255, 255, 255, .6);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-brand);
+  border: 2rpx solid var(--color-brand);
+}
+
+.btn-sm {
+  height: 64rpx;
+  padding: 0 var(--space-md);
+  font-size: var(--text-sm);
+}
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::before {
+  content: '';
+  display: inline-block;
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, .3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin-right: var(--space-sm);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 输入框 ── */
+.input-wrap {
+  display: flex;
+  align-items: center;
+  height: 96rpx;
+  padding: 0 var(--space-md);
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: 2rpx solid transparent;
+  transition: border-color .2s, background .2s;
+}
+
+.input-wrap-focus {
+  background: var(--color-card);
+  border-color: var(--color-brand);
+}
+
+.input-wrap .input {
+  flex: 1;
+  height: 100%;
+  font-size: var(--text-base);
+  color: var(--color-text);
+}
+
+.input-wrap .input-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  color: #fff;
+  font-size: var(--text-xs);
+  margin-left: var(--space-sm);
+}
+
+/* ── 空状态 ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx var(--space-xl) 80rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: var(--space-lg);
+  opacity: .6;
+}
+
+.empty-title {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── 骨架屏 ── */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ── 文字辅助 ── */
+.text-brand { color: var(--color-brand); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-danger { color: var(--color-danger); }
+
+/* ── 安全区 ── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
