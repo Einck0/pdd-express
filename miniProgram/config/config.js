@@ -20,7 +20,7 @@ var defaults = {
   loginRetryDelay: 2000,
 
   // 搜索
-  searchMinLength: 5,
+  searchMinLength: 4,
 
   // 请求超时
   timeout: 15000,

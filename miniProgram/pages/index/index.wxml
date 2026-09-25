@@ -47,7 +47,7 @@
   </block>
 
   <!-- 空状态：未绑定 -->
-  <view wx:elif="{{!hasPhones}}" class="empty">
+  <view wx:elif="{{!hasPhones && packages.length === 0}}" class="empty">
     <view class="empty-illustration">
       <view class="empty-circle">
         <text class="empty-emoji">📋</text>

@@ -291,7 +291,7 @@ class PackageService:
                     "pickup_code": "10-4-4419",
                 },
             ]
-        if len(code) < 5 or len(code) == 6:
+        if len(code) < 4:
             return []
 
         response = self.get_response(code)
