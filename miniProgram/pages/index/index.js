@@ -17,6 +17,7 @@ Page({
     phones: [],
     hasPhones: false,
     loading: true,
+    error: false,
     showToast: false,
     toastText: '',
   },
@@ -68,9 +69,10 @@ Page({
         hasPhones: phones.length > 0,
         packages: packages,
         loading: false,
+        error: false,
       });
     }).catch(function () {
-      that.setData({ loading: false });
+      that.setData({ loading: false, error: true });
     });
   },
 
@@ -100,20 +102,22 @@ Page({
     }
 
     wx.showLoading({ title: '查询中…' });
-    app.api.searchPackages(kw).then(function (data) {
+    return app.api.searchPackages(kw).then(function (data) {
       var list = data.packages || [];
-      that.setData({ packages: list });
+      that.setData({ packages: list, loading: false, error: false });
       if (list.length === 0) {
         that._toast('未查询到包裹');
       }
+    }).catch(function () {
+      that.setData({ loading: false, error: true });
     }).finally(function () {
       wx.hideLoading();
     });
   },
 
   onRefresh: function () {
-    this.setData({ loading: true });
-    this._loadData();
+    this.setData({ loading: true, error: false });
+    return this._loadData();
   },
 
   /* ── 包裹操作 ── */

@@ -46,6 +46,18 @@
     </view>
   </block>
 
+  <!-- 空状态：加载异常 -->
+  <view wx:elif="{{error && packages.length === 0}}" class="empty">
+    <view class="empty-illustration">
+      <view class="empty-circle">
+        <text class="empty-emoji">⚠️</text>
+      </view>
+    </view>
+    <view class="empty-title">加载失败</view>
+    <view class="empty-desc">包裹信息获取失败，请稍后重试</view>
+    <view class="btn btn-brand btn-lg" bindtap="onRefresh">重新加载</view>
+  </view>
+
   <!-- 空状态：未绑定 -->
   <view wx:elif="{{!hasPhones && packages.length === 0}}" class="empty">
     <view class="empty-illustration">
@@ -68,7 +80,8 @@
       </view>
     </view>
     <view class="empty-title">全部取完了</view>
-    <view class="empty-desc">暂无待取包裹，有新包裹会自动出现</view>
+    <view class="empty-desc">当前没有快递，可添加更多号码</view>
+    <view class="btn btn-brand btn-lg" bindtap="onGoBindPhone">号码管理</view>
   </view>
 
   <!-- 包裹列表 -->
