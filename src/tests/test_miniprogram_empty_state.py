@@ -7,7 +7,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MINIPROGRAM_DIR = REPO_ROOT / "miniProgram"
 INDEX_WXML = MINIPROGRAM_DIR / "pages" / "index" / "index.wxml"
+INDEX_WXSS = MINIPROGRAM_DIR / "pages" / "index" / "index.wxss"
 INDEX_JS = MINIPROGRAM_DIR / "pages" / "index" / "index.js"
+BIND_PHONE_JS = MINIPROGRAM_DIR / "pages" / "bindPhone" / "bindPhone.js"
 APP_JSON = MINIPROGRAM_DIR / "app.json"
 
 
@@ -217,6 +219,16 @@ function activeBranch(d) {
   mockSearchPackagesImpl = async () => { throw new Error('search failed'); };
   await listPage.onSearch();
   assert.equal(activeBranch(listPage.data), 'package_list');
+  // 6. Clipboard handlers removed while search/clear/refresh still work
+  assert.equal(typeof pageDef.onCopyCode, 'undefined');
+  assert.equal(typeof pageDef.onCopyWaybill, 'undefined');
+  mockSearchPackagesImpl = async (kw) => ({
+    packages: [{ waybill_code: 'SF' + kw, pickup_code: '8-8-8888' }],
+  });
+  listPage.setData({ keyword: '8888' });
+  await listPage.onSearch();
+  assert.equal(listPage.data.packages.length, 1);
+  assert.equal(listPage.data.packages[0].waybill_code, 'SF8888');
 })();
 """
         proc = subprocess.run(
@@ -229,6 +241,116 @@ function activeBranch(d) {
             proc.returncode,
             0,
             msg=f"Node runtime test failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
+        )
+
+    def test_clipboard_features_removed_across_miniprogram(self):
+        # 1. Verify no JS/WXML/WXSS file in miniProgram invokes clipboard or copy handlers
+        forbidden_tokens = (
+            "setClipboardData",
+            "getClipboardData",
+            "onCopyCode",
+            "onCopyWaybill",
+            "copy-tag",
+            "复制单号",
+            "复制取件码",
+            "取件码已复制",
+            "运单号已复制",
+        )
+        for path in MINIPROGRAM_DIR.rglob("*"):
+            if path.suffix not in {".js", ".wxml", ".wxss", ".json"}:
+                continue
+            content = path.read_text(encoding="utf-8")
+            for token in forbidden_tokens:
+                self.assertNotIn(
+                    token,
+                    content,
+                    msg=f"Unexpected clipboard token {token!r} found in {path.relative_to(REPO_ROOT)}",
+                )
+
+        # 2. Verify package-card WXML structure keeps display fields without copy bindings/hints
+        root = self._parse_index_wxml()
+        page = next(
+            c
+            for c in root["children"]
+            if c["tag"] == "view" and c["attrs"].get("class") == "page"
+        )
+        package_list = next(
+            c
+            for c in page["children"]
+            if c["tag"] == "view" and "package-list" in c["attrs"].get("class", "")
+        )
+        card = next(
+            c
+            for c in package_list["children"]
+            if c["tag"] == "view" and "package-card" in c["attrs"].get("class", "")
+        )
+        self.assertNotIn("bindtap", card["attrs"])
+        self.assertNotIn("bindlongpress", card["attrs"])
+        self.assertNotIn("data-code", card["attrs"])
+        self.assertNotIn("data-waybill", card["attrs"])
+
+        hint_nodes = [
+            c
+            for c in package_list["children"]
+            if "list-hint" in c["attrs"].get("class", "")
+        ]
+        self.assertEqual(hint_nodes, [])
+
+        wxss_text = INDEX_WXSS.read_text(encoding="utf-8")
+        self.assertNotIn(".copy-tag", wxss_text)
+        self.assertNotIn(".package-waybill-row", wxss_text)
+        self.assertNotIn(".list-hint", wxss_text)
+
+        # 3. Verify bindPhone page normal input/add/delete still works at runtime
+        bind_phone_script = r"""
+const assert = require('node:assert/strict');
+const path = require('node:path');
+
+const bindPhoneJsPath = process.argv[1];
+let pageDef = null;
+let addedPhones = [];
+
+global.getApp = () => ({
+  onLogin: (cb) => cb('mock_wxid'),
+  api: {
+    getPhones: async () => ({ phones: ['13800138000'] }),
+    addPhone: async (p) => { addedPhones.push(p); return {}; },
+    deletePhone: async () => ({}),
+  },
+});
+
+global.wx = {
+  showToast: () => {},
+  showModal: () => {},
+  showLoading: () => {},
+  hideLoading: () => {},
+};
+
+global.Page = (def) => { pageDef = def; };
+require(path.resolve(bindPhoneJsPath));
+assert.ok(pageDef, 'bindPhone Page definition should be registered');
+
+const inst = Object.create(pageDef);
+inst.data = JSON.parse(JSON.stringify(pageDef.data));
+inst.setData = function (patch) { Object.assign(this.data, patch); };
+
+(async () => {
+  inst.onPhoneInput({ detail: { value: '13900139000' } });
+  assert.equal(inst.data.phone, '13900139000');
+  await inst.onAdd();
+  assert.deepEqual(addedPhones, ['13900139000']);
+})();
+"""
+        proc = subprocess.run(
+            ["node", "-e", bind_phone_script, str(BIND_PHONE_JS)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(
+            proc.returncode,
+            0,
+            msg=f"bindPhone runtime test failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
         )
 
 

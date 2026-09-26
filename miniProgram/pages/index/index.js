@@ -1,6 +1,6 @@
 /**
  * 首页 — 查件
- * 功能：轮播公告、搜索查件、包裹列表（点击复制取件码、长按复制单号）
+ * 功能：轮播公告、搜索查件、包裹列表
  */
 
 var app = getApp();
@@ -118,28 +118,6 @@ Page({
   onRefresh: function () {
     this.setData({ loading: true, error: false });
     return this._loadData();
-  },
-
-  /* ── 包裹操作 ── */
-
-  onCopyCode: function (e) {
-    var code = e.currentTarget.dataset.code;
-    if (!code) return;
-    try { wx.vibrateShort({ type: 'light' }); } catch (err) {}
-    wx.setClipboardData({
-      data: code,
-      success: function () { wx.showToast({ title: '取件码已复制', icon: 'success' }); },
-    });
-  },
-
-  onCopyWaybill: function (e) {
-    var wb = e.currentTarget.dataset.waybill;
-    if (!wb) return;
-    try { wx.vibrateShort({ type: 'light' }); } catch (err) {}
-    wx.setClipboardData({
-      data: wb,
-      success: function () { wx.showToast({ title: '运单号已复制', icon: 'success' }); },
-    });
   },
 
   /* ── 导航 ── */
